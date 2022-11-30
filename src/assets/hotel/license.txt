@@ -1,0 +1,11 @@
+Model Information:
+* title:	Miami style condominium
+* source:	https://sketchfab.com/3d-models/miami-style-condominium-b3e16399830045a7b67ec8e02447fd27
+* author:	aitortilla01 (https://sketchfab.com/aitortilla01)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Miami style condominium" (https://sketchfab.com/3d-models/miami-style-condominium-b3e16399830045a7b67ec8e02447fd27) by aitortilla01 (https://sketchfab.com/aitortilla01) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
