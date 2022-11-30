@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>City Designer -- Final Project for Interactive computing</title>
+        <link rel="stylesheet" href="main.css" />
+    </head>
+    <body class="bg-slate-100 text-blue-400">
+        <h1 class="py-4 text-center font-serif text-4xl text-blue-700">City Designer</h1>
+        <h1 class="py-4 text-center font-serif text-lg text-blue-700 underline">
+            <a href="https://docs.google.com/document/d/117nbJ_7v_t8p-onToIpkS0nbb8pjiOs0HHoinResQs8" class="hover:font-bold" target="_blank">Google Doc</a>
+            <span class="mx-8 inline-block">&nbsp;</span>
+            <a href="src" class="hover:font-bold" target="_blank">Live DEMO(WIP)</a>
+        </h1>
+        <hr class="sep-line" />
+        <div class="mx-auto w-4/5 text-right text-lg md:w-3/5">
+            <span class="mr-8 inline-block"></span>
+            <a href="mailto:jc9304@nyu.edu" class="mx-2 hover:font-bold hover:text-blue-900">Caitlyn Cui</a>
+            &
+            <a href="mailto:jm9527@nyu.edu" class="mx-2 hover:font-bold hover:text-blue-900">Jeff Ma</a>
+        </div>
+
+        <h2 class="my-4 text-center font-serif text-3xl text-blue-600">Overview</h2>
+        <div class="text-div">
+            Inspired by the video game <a href="https://en.wikipedia.org/wiki/SimCity" target="_blank">SimCity</a> , in this project, we would like to build a
+            virtual reality world where a user can design their own city. The user will play as a designer to place different buildings in a city, including
+            parks, office buildings, schools, factories, hospitals, municipal buildings, and so on. Ideally, we would like to give the user the ability to
+            design roads and streets as well as traffic lights. The city's layout will then be rated by the pedestrians in the city. The pedestrians will walk
+            around the city, and their moods will change in response to the buildings they walk by. For example, if the office buildings are too clustered,
+            pedestrians would probably feel bored. If the hospitals and police stations are too separate, pedestrians would probably feel unsafe.
+        </div>
+
+        <h2 class="text-center font-serif text-2xl text-blue-500">Features</h2>
+
+        <div class="text-div">
+            <ul class="list-decimal">
+                <li>
+                    A 2D map builder that allows the user to manipulate a 2D map and a top-down view 3D city will generate and change correspondingly.
+                    <ul class="ml-4 list-disc text-lg">
+                        <li>We plan to accomplish most of this in Assignment #6 individually to gain more hands-on experience with aframe.</li>
+                        <li>This feature will probably require a lot of 3D models.</li>
+                        <li>
+                            Ideally, buildings are instantiated with OOP. Each type of building is a separate class. Each type of building will have a different
+                            effect on a pedestrian.
+                        </li>
+                        <li>The map will have a collision detector so that buildings cannot be too close to each other.</li>
+                        <li>The user can remove a building from the map or clear the entire map</li>
+                        <li>Optionally, there should be a button to save the map to the local storage.</li>
+                    </ul>
+                </li>
+                <li>
+                    Pedestrians will walk around to rate the city
+
+                    <ul class="ml-4 list-disc text-lg">
+                        <li>Some animated 3D models that can walk smoothly</li>
+                        <li>Pedestrians should be able to search for a path to walk (To start, there will be only one road)</li>
+                        <li>Dynamically display their rating based on the surrounding buildings</li>
+                    </ul>
+                </li>
+                <li>
+                    A traffic system (two ideas for now):
+                    <ul class="ml-4 list-disc text-lg">
+                        <li>
+                            There are a lot of driving cars in the city so the user has to design the positions of traffic lights to resolve the tradeoff
+                            between the safety of pedestrians and the efficiency (speed) of the transportation
+                        </li>
+                        <li>
+                            (When the user can design roads) Using some path-finding algorithms, the cars will find some road to go, providing more
+                            interactions. e.g.A car might go over the speed when there are too few police stations, scaring the pedestrians
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <hr class="sep-line" />
+
+        <h2 class="my-4 text-center font-serif text-3xl text-blue-600">Update #1</h2>
+        <div class="text-div">
+            We have implemented the basic 2D map editor in 2D. In the “Edit” Mode, users could choose from different types of building models and place them on
+            the map. The buildings are differentiated by their colors. Removing and collision detection are also implemented. They could further see the “city”
+            they have already built from scratch by entering the “View” Mode, in which they are able to navigate in VR and experience the city of their own
+            creation in 3D. User can also move to a building by clicking it.
+        </div>
+
+        <h2 class="text-center font-serif text-2xl text-blue-500">Some Thoughts</h2>
+
+        <div class="text-div">
+            We also plan to add rotation, but it is hard to display the UI to the user as the user cannot see which face the building it is. A model will
+            possibly be added on the right of the panel to display the building so that the user can preview the building and rotate it.
+        </div>
+
+        <div class="text-div">
+            We have small thoughts on bringing AR into the CIMS City, such that they are able to interact with current buildings in some way with fiducial
+            markers. We are looking for a way to work with AR camera. Ideally, the camera is only open when the user wants to add something, and it will be
+            turned off once the item is added.
+        </div>
+
+        <div class="text-div">
+            Also, the current model with pedestrians may be difficult to increase its flexibility or adding motions and individual actions that could possibly
+            be triggered if they are near certain types of building models etc. We are considering changing the pedestrians into cars (to make it easier by
+            getting rid of animations), which would have less flexibility yet easier to implement and seem more neatly in the map.
+        </div>
+        <!-- <h2 class="text-center font-serif text-2xl text-blue-500">acknowledgement</h2> -->
+
+        <hr class="sep-line" />
+    </body>
+</html>

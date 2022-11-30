@@ -1,0 +1,11 @@
+Model Information:
+* title:	school building
+* source:	https://sketchfab.com/3d-models/school-building-d34ac09a3ca544df999485c4b311abcc
+* author:	swjeta (https://sketchfab.com/swjeta)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "school building" (https://sketchfab.com/3d-models/school-building-d34ac09a3ca544df999485c4b311abcc) by swjeta (https://sketchfab.com/swjeta) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
