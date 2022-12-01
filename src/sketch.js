@@ -17,6 +17,8 @@ const metaData = {
     apartment: { width: 5.58, height: 16.1351787109375, depth: 5.580000000000004, scaleX: 0.001, scaleY: 0.001, scaleZ: 0.001, color: 'green' },
     hotel: { width: 6.66590234375, height: 16.248599609375, depth: 5.1300000000000034, scaleX: 0.001, scaleY: 0.001, scaleZ: 0.001, color: 'yellow' },
     school: { width: 7.796965147803192, height: 1.3818419276179088, depth: 6.61837641158769, scaleX: 3, scaleY: 3, scaleZ: 3, color: 'white' },
+    park: { width: 7.896933855929955, height: 1.8862671117854113, depth: 10.311207760524983, scaleX: 0.15, scaleY: 0.15, scaleZ: 0.15, color: 'orange' },
+    stadium: { width: 7.272684335708618, height: 2.9066975116729736, depth: 7.316898584365845, scaleX: 2, scaleY: 2, scaleZ: 2, color: 'pink' },
 };
 
 let music;
@@ -63,13 +65,13 @@ function setup() {
 
     // sample
     house = new GLTF({
-        asset: 'school',
+        asset: 'stadium',
         x: 2,
         y: 0,
         z: -5,
-        scaleX: 3,
-        scaleY: 3,
-        scaleZ: 3,
+        scaleX: 2,
+        scaleY: 2,
+        scaleZ: 2,
     });
     world.add(house);
 
@@ -336,7 +338,8 @@ function draw() {
     for (const b of buildings) {
         b.displayControlPanel();
     }
-    console.log(previewContainer.getChildren()[0].getRotationY());
+
+    // console.log(world.camera.cameraEl.object3D.rotation);
     // robots.forEach((b) => {
     //     b.updateControlPanel();
     //     b.move();
@@ -514,17 +517,17 @@ class Building {
 function viewWorld() {
     world.setUserPosition(0, 1, 40);
     const { x, y, z } = world.getUserRotation();
-    world.rotateCameraX((x * -180) / PI);
-    world.rotateCameraY((y * -180) / PI);
-    world.rotateCameraZ((z * -180) / PI);
+    // world.rotateCameraX((x * -180) / PI);
+    // world.rotateCameraY((y * -180) / PI);
+    // world.rotateCameraZ((z * -180) / PI);
 }
 
 function editWorld() {
-    world.setUserPosition(0, 25, 0);
+    world.setUserPosition(0, 25, 1);
     const { x, y, z } = world.getUserRotation();
-    world.rotateCameraX((x * -180) / PI);
-    world.rotateCameraY((y * -180) / PI);
-    world.rotateCameraZ((z * -180) / PI);
+    // world.rotateCameraX((x * -180) / PI);
+    // world.rotateCameraY((y * -180) / PI);
+    // world.rotateCameraZ((z * -180) / PI);
 }
 
 // helpers

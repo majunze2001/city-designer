@@ -1,0 +1,11 @@
+Model Information:
+* title:	Stadium
+* source:	https://sketchfab.com/3d-models/stadium-a0924cca586a4c26ab007bdc080de1f7
+* author:	hillierforshaw (https://sketchfab.com/hillierforshaw)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Stadium" (https://sketchfab.com/3d-models/stadium-a0924cca586a4c26ab007bdc080de1f7) by hillierforshaw (https://sketchfab.com/hillierforshaw) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
