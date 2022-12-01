@@ -23,9 +23,9 @@ let music;
 let choice = 'office';
 let mode = 1;
 let previewContainer;
-// console.log(metaData[choice].scaleX);
 function preload() {
     music = loadSound('assets/sounds/bubble.mp3');
+    // need bgm
 }
 
 function mouseClicked() {
@@ -73,30 +73,13 @@ function setup() {
     });
     world.add(house);
 
-    // not working
-    // const dimensions = getDimensions(house.tag.object3D);
-    // console.log(dimensions);
-
-    let box = new Box({
-        x: 2,
-        y: 0,
-        z: -5,
-        width: 12.94276123046875,
-        height: 5.017404296875001,
-        depth: 6.608043945312501,
-        visible: false,
-        clickFunction: function (entity) {
-            console.log('clicked');
-            world.slideToObject(entity, 2000);
-        },
-    });
     // box.add(house);
     // world.add(box);
 
     // 2d map editor
     // create a control panel that the user can click on
 
-    // create our off screen graphics buffer & texture
+    // create our off screen graphics buffer & texture for panel
     buffer = createGraphics(512, 512);
     texture = world.createDynamicTextureFromCreateGraphics(buffer);
 
@@ -528,12 +511,6 @@ class Building {
     }
 }
 
-class OfficeBuilding extends Building {
-    constructor(_x, _z) {
-        super(_x, _z, 'office', 0.002, 0.002, 0.002);
-    }
-}
-
 function viewWorld() {
     world.setUserPosition(0, 1, 40);
     const { x, y, z } = world.getUserRotation();
@@ -560,5 +537,3 @@ function getDimensions(object3d) {
     const z = box.max.z - box.min.z;
     return { width: x, height: y, depth: z };
 }
-
-function removeBuilding(_x, _y) {}
