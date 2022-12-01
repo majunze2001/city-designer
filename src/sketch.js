@@ -12,7 +12,7 @@ let robots = [];
 let buildings = [];
 let house;
 let container;
-const dimensions = {
+const metaData = {
     office: { width: 12.94276123046875, height: 5.017404296875001, depth: 6.608043945312501, scaleX: 0.002, scaleY: 0.002, scaleZ: 0.002, color: 'blue' },
     apartment: { width: 5.58, height: 16.1351787109375, depth: 5.580000000000004, scaleX: 0.001, scaleY: 0.001, scaleZ: 0.001, color: 'green' },
     hotel: { width: 6.66590234375, height: 16.248599609375, depth: 5.1300000000000034, scaleX: 0.001, scaleY: 0.001, scaleZ: 0.001, color: 'yellow' },
@@ -22,14 +22,17 @@ const dimensions = {
 let music;
 let choice = 'office';
 let mode = 1;
-// console.log(dimensions[choice].scaleX);
+let previewContainer;
+// console.log(metaData[choice].scaleX);
 function preload() {
     music = loadSound('assets/sounds/bubble.mp3');
 }
 
 function mouseClicked() {
-    // const t = getDimensions(house.tag.object3D);
-    // console.log(t);
+    if (house) {
+        const t = getDimensions(house.tag.object3D);
+        console.log(t);
+    }
 }
 
 function setup() {
@@ -40,13 +43,25 @@ function setup() {
     world = new World('VRScene');
 
     // have the user floating above the world
-    world.setUserPosition(0, 25, 0);
+    world.setUserPosition(0, 25, 1);
 
     const sky = new Sky({
         asset: 'sky',
     });
     world.add(sky);
 
+    // floor for placing the buildings
+    let floor = new Plane({
+        width: 100,
+        height: 100,
+        asset: 'grass',
+        repeatX: 100,
+        repeatY: 100,
+        rotationX: -90,
+    });
+    world.add(floor);
+
+    // sample
     house = new GLTF({
         asset: 'school',
         x: 2,
@@ -78,23 +93,13 @@ function setup() {
     // box.add(house);
     // world.add(box);
 
+    // 2d map editor
+    // create a control panel that the user can click on
+
     // create our off screen graphics buffer & texture
     buffer = createGraphics(512, 512);
     texture = world.createDynamicTextureFromCreateGraphics(buffer);
 
-    // floor for placing the buildings
-    let floor = new Plane({
-        width: 100,
-        height: 100,
-        asset: 'grass',
-        repeatX: 100,
-        repeatY: 100,
-        rotationX: -90,
-    });
-    world.add(floor);
-
-    // 2d map editor
-    // create a control panel that the user can click on
     let panel = new Plane({
         width: 5,
         height: 5,
@@ -115,8 +120,14 @@ function setup() {
 
             if (mode) {
                 // collision detecting
-                const w = map(dimensions[choice].width, 0, 100, 0, 512);
-                const h = map(dimensions[choice].depth, 0, 100, 0, 512);
+                let w = map(metaData[choice].width, 0, 100, 0, 512);
+                let h = map(metaData[choice].depth, 0, 100, 0, 512);
+
+                if (getPreviewRotation() % 180 !== 0) {
+                    const t = w;
+                    w = h;
+                    h = t;
+                }
                 const pointsOffsets = [
                     [0, 0],
                     [w / 2, h / 2],
@@ -126,9 +137,7 @@ function setup() {
                 ];
                 // get the colors of all detect positions
                 const colors = pointsOffsets.map(([x, y]) => buffer.get(intersectionInfo.point2d.x + x, intersectionInfo.point2d.y + y));
-                console.log(colors);
                 const colored = colors.filter((c) => !c.every((value, index) => value === [0, 0, 0, 255][index]));
-                console.log(colored.length > 1);
                 if (colored.length > 0) {
                     // collision
                     buffer.fill('red');
@@ -136,7 +145,7 @@ function setup() {
                     buffer.rect(intersectionInfo.point2d.x, intersectionInfo.point2d.y, w, h);
                 } else {
                     // adding
-                    buffer.fill(dimensions[choice].color);
+                    buffer.fill(metaData[choice].color);
                     buffer.rectMode(CENTER);
                     buffer.rect(intersectionInfo.point2d.x, intersectionInfo.point2d.y, w, h);
                     // if the mouse is currently pressed we should create a Robot here on the floor
@@ -147,10 +156,11 @@ function setup() {
                                 intersectionInfo.point2d.x,
                                 intersectionInfo.point2d.y,
                                 choice,
-                                dimensions[choice].scaleX,
-                                dimensions[choice].scaleY,
-                                dimensions[choice].scaleZ,
-                                dimensions[choice].color
+                                metaData[choice].scaleX,
+                                metaData[choice].scaleY,
+                                metaData[choice].scaleZ,
+                                metaData[choice].color,
+                                getPreviewRotation()
                             )
                         );
                         setTimeout(() => (mouseCooldown = false), 1000);
@@ -164,8 +174,8 @@ function setup() {
 
                 if (mouseIsPressed) {
                     buildings.forEach((b, i) => {
-                        const w = map(dimensions[b.asset].width, 0, 100, 0, 512);
-                        const h = map(dimensions[b.asset].depth, 0, 100, 0, 512);
+                        const w = map(metaData[b.asset].width, 0, 100, 0, 512);
+                        const h = map(metaData[b.asset].depth, 0, 100, 0, 512);
                         // just for easy,
                         const r = h - (h >> 2) + (w >> 2);
                         let bufferX = map(b.x, -50, 50, 0, 512);
@@ -183,12 +193,25 @@ function setup() {
         },
     });
     world.add(panel);
-    const officeBtn = new Plane({
-        width: 0.5,
-        height: 0.5,
-        x: -4,
-        y: 25,
+
+    //  UI
+
+    // preview
+    previewContainer = new Container3D({
+        x: -5,
+        y: 23.5,
         z: -5,
+    });
+    world.add(previewContainer);
+
+    displayPreview();
+
+    // rotate button
+    const rotateLeftBtn = new Tetrahedron({
+        x: -6,
+        y: 22.5,
+        z: -5,
+        radius: 0.5,
         red: 0,
         green: 0,
         blue: 255,
@@ -199,67 +222,21 @@ function setup() {
             entity.setScale(1, 1, 1);
         },
         clickFunction: function (entity) {
-            console.log('office btn clicked');
-            choice = 'office';
-            mode = 1;
+            console.log(`rotateLeftBtn clicked`);
+            if (previewContainer.getChildren()[0]) {
+                console.log('spin');
+                previewContainer.getChildren()[0].spinY(-90);
+            }
         },
     });
-    world.add(officeBtn);
 
-    const apartmentBtn = new Plane({
-        width: 0.5,
-        height: 0.5,
-        x: -4,
-        y: 24.5,
+    const rotateRightBtn = new Tetrahedron({
+        x: -4.5,
+        y: 22.5,
         z: -5,
+        radius: 0.5,
         red: 0,
-        green: 255,
-        blue: 0,
-        enterFunction: function (entity) {
-            entity.setScale(1.5, 1.5, 1.5);
-        },
-        leaveFunction: function (entity) {
-            entity.setScale(1, 1, 1);
-        },
-        clickFunction: function (entity) {
-            console.log('apartmentBtn btn clicked');
-            choice = 'apartment';
-            mode = 1;
-        },
-    });
-    world.add(apartmentBtn);
-
-    const hotelBtn = new Plane({
-        width: 0.5,
-        height: 0.5,
-        x: -4,
-        y: 24,
-        z: -5,
-        red: 255,
-        green: 255,
-        blue: 0,
-        enterFunction: function (entity) {
-            entity.setScale(1.5, 1.5, 1.5);
-        },
-        leaveFunction: function (entity) {
-            entity.setScale(1, 1, 1);
-        },
-        clickFunction: function (entity) {
-            console.log('hotelBtn btn clicked');
-            choice = 'hotel';
-            mode = 1;
-        },
-    });
-    world.add(hotelBtn);
-
-    const schoolBtn = new Plane({
-        width: 0.5,
-        height: 0.5,
-        x: -4,
-        y: 23.5,
-        z: -5,
-        red: 255,
-        green: 255,
+        green: 0,
         blue: 255,
         enterFunction: function (entity) {
             entity.setScale(1.5, 1.5, 1.5);
@@ -268,12 +245,58 @@ function setup() {
             entity.setScale(1, 1, 1);
         },
         clickFunction: function (entity) {
-            console.log('schoolBtn btn clicked');
-            choice = 'school';
-            mode = 1;
+            console.log(`rotateRightBtn clicked`);
+            if (previewContainer.getChildren()[0]) {
+                previewContainer.getChildren()[0].spinY(90);
+            }
         },
     });
-    world.add(schoolBtn);
+
+    world.add(rotateLeftBtn);
+    world.add(rotateRightBtn);
+
+    // display choices
+    const startPos = { x: 3, y: 27, z: -5 };
+
+    Object.entries(metaData).forEach(([key, data]) => {
+        const c = color(data.color);
+        const btn = new Plane({
+            width: 0.5,
+            height: 0.5,
+            x: startPos.x,
+            y: startPos.y,
+            z: startPos.z,
+            red: red(c),
+            green: green(c),
+            blue: blue(c),
+            enterFunction: function (entity) {
+                entity.setScale(1.5, 1.5, 1.5);
+            },
+            leaveFunction: function (entity) {
+                entity.setScale(1, 1, 1);
+            },
+            clickFunction: function (entity) {
+                console.log(`${key} btn clicked`);
+                choice = key;
+                displayPreview();
+                mode = 1;
+            },
+        });
+
+        const name = new Text({
+            text: key,
+            red: 0,
+            green: 0,
+            blue: 0,
+            x: 0.8,
+            scaleX: 5,
+            scaleY: 5,
+            scaleZ: 5,
+        });
+        btn.add(name);
+        startPos.y -= 0.5;
+        world.add(btn);
+    });
 
     // when clicked this will remove all buildings from the world
     let clearButton = new Sphere({
@@ -309,19 +332,19 @@ function setup() {
     });
     world.add(editButton);
 
-    const door = new Ring({
-        x: 50,
-        y: 0,
-        z: -18,
-        radiusInner: 6,
-        radiusOuter: 8,
-        side: 'double',
-        red: random(255),
-        green: random(255),
-        blue: random(255),
-        rotationY: 90,
-    });
-    world.add(door);
+    // const door = new Ring({
+    //     x: 50,
+    //     y: 0,
+    //     z: -18,
+    //     radiusInner: 6,
+    //     radiusOuter: 8,
+    //     side: 'double',
+    //     red: random(255),
+    //     green: random(255),
+    //     blue: random(255),
+    //     rotationY: 90,
+    // });
+    // world.add(door);
 }
 
 function draw() {
@@ -330,14 +353,33 @@ function draw() {
     for (const b of buildings) {
         b.displayControlPanel();
     }
-    robots.forEach((b) => {
-        b.updateControlPanel();
-        b.move();
-    });
-    if (frameCount % 30 === 0) {
-        robots.push(new Robot());
+    console.log(previewContainer.getChildren()[0].getRotationY());
+    // robots.forEach((b) => {
+    //     b.updateControlPanel();
+    //     b.move();
+    // });
+    // if (frameCount % 30 === 0) {
+    //     robots.push(new Robot());
+    // }
+    // robots = robots.filter((r) => r.x <= 50);
+}
+
+// helpers for preview
+
+function displayPreview() {
+    while (previewContainer.getChildren()[0]) {
+        previewContainer.removeChild(previewContainer.getChildren()[0]);
     }
-    robots = robots.filter((r) => r.x <= 50);
+    const previewModel = new GLTF({
+        asset: choice,
+        scaleX: metaData[choice].scaleX / 4,
+        scaleY: metaData[choice].scaleY / 4,
+        scaleZ: metaData[choice].scaleZ / 4,
+    });
+    previewContainer.addChild(previewModel);
+}
+function getPreviewRotation() {
+    return previewContainer.getChildren()[0].getRotationY();
 }
 
 // our Robot class that will randomly wander
@@ -423,7 +465,7 @@ class Robot {
 }
 
 class Building {
-    constructor(_x, _z, asset, scaleX, scaleY, scaleZ, color = 'blue') {
+    constructor(_x, _z, asset, scaleX, scaleY, scaleZ, color = 'blue', rotationY = 0) {
         // convert from buffer coords (512x512) to world coords (100x100)
         this.x = map(_x, 0, 512, -50, 50);
         this.z = map(_z, 0, 512, -50, 50);
@@ -437,7 +479,7 @@ class Building {
             scaleX: scaleX,
             scaleY: scaleY,
             scaleZ: scaleZ,
-            // rotationY: 90,
+            rotationY: rotationY,
         });
         world.add(this.body);
 
@@ -451,9 +493,9 @@ class Building {
                 console.log('clicked');
                 world.slideToObject(entity, 2000);
             },
-            width: dimensions[asset].width,
-            height: dimensions[asset].height,
-            depth: dimensions[asset].depth,
+            width: metaData[asset].width,
+            height: metaData[asset].height,
+            depth: metaData[asset].depth,
         });
         world.add(this.wrapper);
     }
