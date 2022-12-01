@@ -1,0 +1,11 @@
+Model Information:
+* title:	Episode 61 - Stadium
+* source:	https://sketchfab.com/3d-models/episode-61-stadium-bf5b622349f342508d138d483fe89a4a
+* author:	dartuchiwa (https://sketchfab.com/dartuchiwa)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Episode 61 - Stadium" (https://sketchfab.com/3d-models/episode-61-stadium-bf5b622349f342508d138d483fe89a4a) by dartuchiwa (https://sketchfab.com/dartuchiwa) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
