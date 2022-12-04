@@ -100,8 +100,8 @@ function setup() {
             // interacting with this entity.  it contains the following info:
             // .distance : a float describing how far away the user is
             // .point3d : an object with three properties (x, y & z) describing where the user is touching the entity
-            // .point2d : an object with two properites (x & y) describing where the user is touching the entity in 2D space (essentially where on the dynamic canvas the user is touching)
-            // .uv : an object with two properies (x & y) describing the raw textural offset (used to compute point2d)
+            // .point2d : an object with two properties (x & y) describing where the user is touching the entity in 2D space (essentially where on the dynamic canvas the user is touching)
+            // .uv : an object with two properties (x & y) describing the raw textural offset (used to compute point2d)
 
             if (mode) {
                 // collision detecting
@@ -348,6 +348,12 @@ function draw() {
     //     robots.push(new Robot());
     // }
     // robots = robots.filter((r) => r.x <= 50);
+
+    const cameraWindow = document.querySelector('iframe')?.contentWindow;
+    if (cameraWindow && cameraWindow.addHiro) {
+        console.log('I should do something here');
+        cameraWindow.addHiro = false;
+    }
 }
 
 // helpers for preview
@@ -530,6 +536,18 @@ function editWorld() {
     // world.rotateCameraZ((z * -180) / PI);
 }
 
+function switchCamera() {
+    document.querySelector('#VRScene').classList.toggle('hidden');
+    const btns = document.querySelector('#panel').children;
+    myForEach(btns, (b) => b.classList.toggle('hidden'));
+    if (document.querySelector('iframe')) {
+        document.querySelector('iframe').remove();
+    } else {
+        const camera = document.body.appendChild(document.createElement('iframe'));
+        camera.src = 'camera.html';
+    }
+}
+
 // helpers
 function getDimensions(object3d) {
     // https://stackoverflow.com/questions/51380941/aframe-size-of-model
@@ -539,4 +557,8 @@ function getDimensions(object3d) {
     const y = box.max.y - box.min.y;
     const z = box.max.z - box.min.z;
     return { width: x, height: y, depth: z };
+}
+
+function myForEach(collection, cb) {
+    Array.prototype.forEach.call(collection, cb);
 }
