@@ -239,7 +239,7 @@ function setup() {
             // .point2d : an object with two properties (x & y) describing where the user is touching the entity in 2D space (essentially where on the dynamic canvas the user is touching)
             // .uv : an object with two properties (x & y) describing the raw textural offset (used to compute point2d)
             if (mode) {
-                if (choice == 'road') {
+                if (Object.hasOwn(brick,choice)) {
                     addRoadToWorld(entity, intersectionInfo);
                 } else {
                     addBuildingToWorld(entity, intersectionInfo);
