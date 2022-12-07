@@ -366,6 +366,8 @@ function setup() {
     });
     world.add(editButton);
 
+    bgm.play();
+
     // const door = new Ring({
     //     x: 50,
     //     y: 0,
