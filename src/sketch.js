@@ -21,7 +21,7 @@ const metaData = {
     school: { width: 7.796965147803192, height: 1.3818419276179088, depth: 6.61837641158769, scaleX: 3, scaleY: 3, scaleZ: 3, color: 'white' },
     park: { width: 7.896933855929955, height: 1.8862671117854113, depth: 10.311207760524983, scaleX: 0.15, scaleY: 0.15, scaleZ: 0.15, color: 'orange' },
     stadium: { width: 7.272684335708618, height: 2.9066975116729736, depth: 7.316898584365845, scaleX: 2, scaleY: 2, scaleZ: 2, color: 'pink' },
-    road: { width: 100, height:100, color:'grey'}
+    road: { width: 100, height: 100, color: 'grey' },
 };
 
 let music;
@@ -29,10 +29,12 @@ let bgm;
 let choice = 'road';
 let mode = 1;
 let previewContainer;
+
 function preload() {
     music = loadSound('assets/sounds/bubble.mp3');
     bgm = loadSound('assets/sounds/SimCity.mp3');
     // need bgm
+    console.log(bgm);
 }
 
 function mouseClicked() {
@@ -64,7 +66,7 @@ function setup() {
         asset: 'grass',
         repeatX: 100,
         repeatY: 100,
-        rotationX: -90
+        rotationX: -90,
     });
     world.add(floor);
 
@@ -109,10 +111,9 @@ function setup() {
             // .uv : an object with two properties (x & y) describing the raw textural offset (used to compute point2d)
 
             if (mode) {
-                if (choice == 'road'){
+                if (choice == 'road') {
                     roads.push(new Road(intersectionInfo.point2d.x, intersectionInfo.point2d.y));
-                }
-                else{
+                } else {
                     // collision detecting
                     let w = map(metaData[choice].width, 0, 100, 0, 512);
                     let h = map(metaData[choice].depth, 0, 100, 0, 512);
@@ -185,7 +186,7 @@ function setup() {
                     });
                 }
             }
-        }
+        },
     });
     world.add(panel);
 
@@ -327,8 +328,6 @@ function setup() {
     });
     world.add(editButton);
 
-    bgm.play();
-
     // const door = new Ring({
     //     x: 50,
     //     y: 0,
@@ -361,7 +360,7 @@ function draw() {
     // }
     // robots = robots.filter((r) => r.x <= 50);
 
-    for( let i=0;i<roads.length;i++){
+    for (let i = 0; i < roads.length; i++) {
         roads[i].updateControlPanel();
     }
 
@@ -406,14 +405,14 @@ class Road {
             x: this.x,
             y: 0,
             z: this.z,
-            rotationX:-90
+            rotationX: -90,
         });
         world.add(this.body);
     }
 
     updateControlPanel() {
         // update the buffer with our current position
-        buffer.fill(this.r,this.g,this.b);
+        buffer.fill(this.r, this.g, this.b);
         buffer.rectMode(CENTER);
 
         // convert back out to buffer coords
@@ -502,8 +501,6 @@ class Robot {
             music.play();
             this.removeFromWorld();
         }
-
-
     }
 
     removeFromWorld() {
@@ -618,3 +615,9 @@ function getDimensions(object3d) {
 function myForEach(collection, cb) {
     Array.prototype.forEach.call(collection, cb);
 }
+
+document.addEventListener('mousemove', function () {
+    if (bgm && !bgm.isPlaying()) {
+        bgm.play();
+    }
+});
