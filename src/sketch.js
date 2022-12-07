@@ -16,7 +16,7 @@ let house;
 let container;
 
 //cells in the map to enable "snapping to the center"
-const CELLSIZE = 64;
+const CELLSIZE = 32;
 
 const metaData = {
     office: { width: 12.94276123046875, height: 5.017404296875001, depth: 6.608043945312501, scaleX: 0.002, scaleY: 0.002, scaleZ: 0.002, color: 'blue' },
@@ -25,7 +25,10 @@ const metaData = {
     school: { width: 7.796965147803192, height: 1.3818419276179088, depth: 6.61837641158769, scaleX: 3, scaleY: 3, scaleZ: 3, color: 'white' },
     park: { width: 7.896933855929955, height: 1.8862671117854113, depth: 10.311207760524983, scaleX: 0.15, scaleY: 0.15, scaleZ: 0.15, color: 'orange' },
     stadium: { width: 7.272684335708618, height: 2.9066975116729736, depth: 7.316898584365845, scaleX: 2, scaleY: 2, scaleZ: 2, color: 'pink' },
-    road: { width: 10, height:10, color:'grey'}
+};
+
+const brick = {
+    road: { width:4, height:4, color:'grey'},
 };
 
 let music;
@@ -122,9 +125,8 @@ function setup() {
             if (mode) {
                 if (choice == 'road'){
                     //collision detection
-                    //** still overlap sometimes
-                    let w = map(metaData[choice].width, 0, 100, 0, 512);
-                    let h = map(metaData[choice].height, 0, 100, 0, 512);
+                    let w = map(brick[choice].width, 0, 100, 0, 512);
+                    let h = map(brick[choice].depth, 0, 100, 0, 512);
 
                     let road_X = cellX*CELLSIZE +CELLSIZE/2;
                     let road_Y = cellY*CELLSIZE +CELLSIZE/2;
@@ -151,7 +153,7 @@ function setup() {
                         buffer.rect(road_X, road_Y, w, h);
                     } else {
                         // adding
-                        buffer.fill(metaData[choice].color);
+                        buffer.fill(brick[road].color);
                         buffer.rectMode(CENTER);
                         buffer.rect(road_X, road_Y, w, h);
                         // if the mouse is currently pressed we should create a Robot here on the floor
@@ -344,6 +346,46 @@ function setup() {
         world.add(btn);
     });
 
+    Object.entries(brick).forEach(([key, data]) => {
+        const c = color(data.color);
+        const btn = new Plane({
+            width: 0.5,
+            height: 0.5,
+            x: startPos.x,
+            y: startPos.y,
+            z: startPos.z,
+            red: red(c),
+            green: green(c),
+            blue: blue(c),
+            enterFunction: function (entity) {
+                entity.setScale(1.5, 1.5, 1.5);
+            },
+            leaveFunction: function (entity) {
+                entity.setScale(1, 1, 1);
+            },
+            clickFunction: function (entity) {
+                console.log(`${key} btn clicked`);
+                choice = key;
+                displayPreview();
+                mode = 1;
+            },
+        });
+
+        const name = new Text({
+            text: key,
+            red: 0,
+            green: 0,
+            blue: 0,
+            x: 0.8,
+            scaleX: 5,
+            scaleY: 5,
+            scaleZ: 5,
+        });
+        btn.add(name);
+        startPos.y -= 0.5;
+        world.add(btn);
+    });
+
     // when clicked this will remove all buildings from the world
     let clearButton = new Sphere({
         red: 255,
@@ -378,7 +420,7 @@ function setup() {
     });
     world.add(editButton);
 
-    bgm.play();
+    // bgm.play();
 
     // const door = new Ring({
     //     x: 50,
@@ -429,13 +471,22 @@ function displayPreview() {
     while (previewContainer.getChildren()[0]) {
         previewContainer.removeChild(previewContainer.getChildren()[0]);
     }
-    const previewModel = new GLTF({
-        asset: choice,
-        scaleX: metaData[choice].scaleX / 4,
-        scaleY: metaData[choice].scaleY / 4,
-        scaleZ: metaData[choice].scaleZ / 4,
-    });
-    previewContainer.addChild(previewModel);
+    if(choice == "road"){
+        const previewModel = new Plane({
+            asset: choice,
+        });
+        previewContainer.addChild(previewModel);
+    }
+    else{
+        const previewModel = new GLTF({
+            asset: choice,
+            scaleX: metaData[choice].scaleX / 4,
+            scaleY: metaData[choice].scaleY / 4,
+            scaleZ: metaData[choice].scaleZ / 4,
+        });
+        previewContainer.addChild(previewModel);
+    }
+    
 }
 function getPreviewRotation() {
     return previewContainer.getChildren()[0].getRotationY();
@@ -446,7 +497,7 @@ class Road {
         // convert from buffer coords (512x512) to world coords (100x100)
         this.x = map(_x, 0, 512, -50, 50);
         this.z = map(_z, 0, 512, -50, 50);
-        this.length = map(64,0,512,-50,50);
+        this.length = map(CELLSIZE,0,512,-50,50);
         this.asset = 'road';
 
         this.r = 211;
@@ -473,7 +524,7 @@ class Road {
         // convert back out to buffer coords
         let bufferX = map(this.x, -50, 50, 0, 512);
         let bufferY = map(this.z, -50, 50, 0, 512);
-        buffer.rect(bufferX, bufferY, 64, 64);
+        buffer.rect(bufferX, bufferY, CELLSIZE, CELLSIZE);
     }
 
     removeFromWorld() {
@@ -671,8 +722,8 @@ function myForEach(collection, cb) {
     Array.prototype.forEach.call(collection, cb);
 }
 
-document.addEventListener('mousemove',function(){
-    if (bgm && !bgm.isPlaying()){
-        bgm.play();
-    }
-});
+// document.addEventListener('mousemove',function(){
+//     if (bgm && !bgm.isPlaying()){
+//         bgm.play();
+//     }
+// });
