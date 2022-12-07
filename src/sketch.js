@@ -416,6 +416,11 @@ function setup() {
         world.add(btn);
     });
 
+    // const startPos = { x: 3, y: 27, z: -5 };
+
+    startPos.x = 5;
+    startPos.y = 27;
+
     Object.entries(brick).forEach(([key, data]) => {
         const c = color(data.color);
         const btn = new Plane({
