@@ -30,6 +30,15 @@
                 left: 20px;
                 bottom: 20px;
             }
+
+            #controls {
+                height: 20px;
+                line-height: 20px;
+                position: absolute;
+                right: 20px;
+                top: 20px;
+            }
+
             .hidden {
                 display: none;
             }
@@ -87,6 +96,10 @@
             <button onclick="viewWorld()">View</button>
             <button onclick="switchCamera()">Camera</button>
             <button onclick="switchCamera()" class="hidden">Close</button>
+        </div>
+
+        <div id="controls">
+            <button onclick="switchBgm(event)">BGM: <span>On</span> <span class="hidden"> Off</span></button>
         </div>
     </body>
 </html>
