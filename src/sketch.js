@@ -125,8 +125,10 @@ function setup() {
             if (mode) {
                 if (choice == 'road'){
                     //collision detection
-                    let w = map(brick[choice].width, 0, 100, 0, 512);
-                    let h = map(brick[choice].height, 0, 100, 0, 512);
+                    // let w = map(brick[choice].width, 0, 100, 0, 512);
+                    // let h = map(brick[choice].height, 0, 100, 0, 512);
+                    let w = CELLSIZE;
+                    let h = CELLSIZE;
 
                     let road_X = cellX*CELLSIZE +CELLSIZE/2;
                     let road_Y = cellY*CELLSIZE +CELLSIZE/2;
@@ -144,13 +146,13 @@ function setup() {
                         [-w / 2, -h / 2],
                     ];
 
-                    const colors = pointsOffsets.map(([x, y]) => buffer.get(intersectionInfo.point2d.x + x, intersectionInfo.point2d.y + y));
+                    const colors = pointsOffsets.map(([x, y]) => buffer.get(road_X + x, road_Y + y));
                     const colored = colors.filter((c) => !c.every((value, index) => value === [0, 0, 0, 255][index]));
 
                     if (colored.length > 0) {
                         buffer.fill('red');
                         buffer.rectMode(CENTER);
-                        buffer.rect(road_X, road_Y, w, h);
+                        buffer.rect(road_X, road_Y, CELLSIZE, h);
                     } else {
                         // adding
                         buffer.fill(brick[choice].color);
@@ -500,6 +502,10 @@ class Road {
         this.length = map(CELLSIZE,0,512,-50,50);
         this.asset = 'road';
         this.color = 'grey';
+
+        this.r = red(this.color);
+        this.g = red(this.color);
+        this.b = red(this.color);
 
         this.body = new Plane({
             asset: this.asset,
