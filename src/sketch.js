@@ -16,7 +16,7 @@ let house;
 let container;
 
 //cells in the map to enable "snapping to the center"
-const CELLSIZE = 32;
+const CELLSIZE = 16;
 
 const metaData = {
     office: { width: 12.94276123046875, height: 5.017404296875001, depth: 6.608043945312501, scaleX: 0.002, scaleY: 0.002, scaleZ: 0.002, color: 'blue' },
@@ -28,7 +28,7 @@ const metaData = {
 };
 
 const brick = {
-    road: { width:4, height:4, color:'grey'},
+    road: { width: 100 / CELLSIZE, height: 100 / CELLSIZE, color: 'grey' },
 };
 
 let music;
@@ -116,22 +116,21 @@ function setup() {
             // .point3d : an object with three properties (x, y & z) describing where the user is touching the entity
             // .point2d : an object with two properties (x & y) describing where the user is touching the entity in 2D space (essentially where on the dynamic canvas the user is touching)
             // .uv : an object with two properties (x & y) describing the raw textural offset (used to compute point2d)
-            console.log("hello");
+            console.log('hello');
             let cellX = parseInt(intersectionInfo.point2d.x / CELLSIZE);
             let cellY = parseInt(intersectionInfo.point2d.y / CELLSIZE);
             console.log(cellX, cellY);
 
-
             if (mode) {
-                if (choice == 'road'){
+                if (choice == 'road') {
                     //collision detection
                     // let w = map(brick[choice].width, 0, 100, 0, 512);
                     // let h = map(brick[choice].height, 0, 100, 0, 512);
                     let w = CELLSIZE;
                     let h = CELLSIZE;
 
-                    let road_X = cellX*CELLSIZE +CELLSIZE/2;
-                    let road_Y = cellY*CELLSIZE +CELLSIZE/2;
+                    let road_X = cellX * CELLSIZE + CELLSIZE / 2;
+                    let road_Y = cellY * CELLSIZE + CELLSIZE / 2;
 
                     if (getPreviewRotation() % 180 !== 0) {
                         const t = w;
@@ -162,12 +161,10 @@ function setup() {
                         if (mouseIsPressed && !mouseCooldown) {
                             mouseCooldown = true;
                             roads.push(new Road(road_X, road_Y));
-                            setTimeout(() => (mouseCooldown = false), 1000);
+                            setTimeout(() => (mouseCooldown = false), 100);
                         }
                     }
-
-                }
-                else{
+                } else {
                     // collision detecting
                     let w = map(metaData[choice].width, 0, 100, 0, 512);
                     let h = map(metaData[choice].depth, 0, 100, 0, 512);
@@ -473,13 +470,12 @@ function displayPreview() {
     while (previewContainer.getChildren()[0]) {
         previewContainer.removeChild(previewContainer.getChildren()[0]);
     }
-    if(choice == "road"){
+    if (choice == 'road') {
         const previewModel = new Plane({
             asset: choice,
         });
         previewContainer.addChild(previewModel);
-    }
-    else{
+    } else {
         const previewModel = new GLTF({
             asset: choice,
             scaleX: metaData[choice].scaleX / 4,
@@ -488,7 +484,6 @@ function displayPreview() {
         });
         previewContainer.addChild(previewModel);
     }
-    
 }
 function getPreviewRotation() {
     return previewContainer.getChildren()[0].getRotationY();
@@ -499,7 +494,7 @@ class Road {
         // convert from buffer coords (512x512) to world coords (100x100)
         this.x = map(_x, 0, 512, -50, 50);
         this.z = map(_z, 0, 512, -50, 50);
-        this.length = map(CELLSIZE,0,512,-50,50);
+        this.length = map(CELLSIZE, 0, 512, -50, 50);
         this.asset = 'road';
         this.color = 'grey';
 
@@ -513,6 +508,8 @@ class Road {
             y: 0.1,
             z: this.z,
             rotationX: -90,
+            width: brick[choice].width,
+            height: brick[choice].height,
         });
         world.add(this.body);
     }
