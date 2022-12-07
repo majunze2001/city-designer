@@ -1,14 +1,16 @@
 // variable to hold a reference to our A-Frame world
 let world;
+// world has 100 * 100 floor
 
-// dynamic texture buffer
-let buffer, texture;
+// dynamic texture buffer for the control panel for 2D map
+let buffer;
 
-// mouse click control
+// mouse click control for placing items
 let mouseCooldown = false;
 
 // our robot array
 let robots = [];
+
 let buildings = [];
 let roads = [];
 
@@ -86,10 +88,9 @@ let mode = 1;
 let previewContainer;
 
 function preload() {
-    music = loadSound('assets/sounds/bubble.mp3');
-    bgm = loadSound('assets/sounds/SimCity.mp3');
+    // music = loadSound('assets/sounds/bubble.mp3');
+    // bgm = loadSound('assets/sounds/SimCity.mp3');
     // need bgm
-    console.log(bgm);
 }
 
 function mouseClicked() {
@@ -271,7 +272,7 @@ function setup() {
                     buildings.forEach((b, i) => {
                         const w = map(metaData[b.asset].width, 0, 100, 0, 512);
                         const h = map(metaData[b.asset].depth, 0, 100, 0, 512);
-                        // just for easy,
+                        // just for easy, consider them as circles
                         const r = h - (h >> 2) + (w >> 2);
                         let bufferX = map(b.x, -50, 50, 0, 512);
                         let bufferY = map(b.z, -50, 50, 0, 512);
@@ -280,6 +281,21 @@ function setup() {
                             console.log('found');
                             b.removeFromWorld();
                             buildings.splice(i, 1);
+                            return;
+                        }
+                    });
+                    roads.forEach((b, i) => {
+                        const w = CELLSIZE;
+                        const h = CELLSIZE;
+                        // just for easy, consider them as circles
+                        const r = h - (h >> 2) + (w >> 2);
+                        let bufferX = map(b.x, -50, 50, 0, 512);
+                        let bufferY = map(b.z, -50, 50, 0, 512);
+                        const d = dist(intersectionInfo.point2d.x, intersectionInfo.point2d.y, bufferX, bufferY);
+                        if (d <= r + 10) {
+                            console.log('found');
+                            b.removeFromWorld();
+                            roads.splice(i, 1);
                             return;
                         }
                     });
