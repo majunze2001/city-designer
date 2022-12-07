@@ -29,10 +29,12 @@ let bgm;
 let choice = 'road';
 let mode = 1;
 let previewContainer;
+
 function preload() {
     music = loadSound('assets/sounds/bubble.mp3');
     bgm = loadSound('assets/sounds/SimCity.mp3');
     // need bgm
+    console.log(bgm);
 }
 
 function mouseClicked() {
@@ -64,7 +66,7 @@ function setup() {
         asset: 'grass',
         repeatX: 100,
         repeatY: 100,
-        rotationX: -90
+        rotationX: -90,
     });
     world.add(floor);
 
@@ -147,7 +149,7 @@ function setup() {
                             setTimeout(() => (mouseCooldown = false), 1000);
                         }
                     }
-                    
+
                 }
                 else{
                     // collision detecting
@@ -222,7 +224,7 @@ function setup() {
                     });
                 }
             }
-        }
+        },
     });
     world.add(panel);
 
@@ -364,8 +366,6 @@ function setup() {
     });
     world.add(editButton);
 
-    bgm.play();
-
     // const door = new Ring({
     //     x: 50,
     //     y: 0,
@@ -398,7 +398,7 @@ function draw() {
     // }
     // robots = robots.filter((r) => r.x <= 50);
 
-    for( let i=0;i<roads.length;i++){
+    for (let i = 0; i < roads.length; i++) {
         roads[i].updateControlPanel();
     }
 
@@ -443,14 +443,14 @@ class Road {
             x: this.x,
             y: 0.1,
             z: this.z,
-            rotationX:-90
+            rotationX: -90,
         });
         world.add(this.body);
     }
 
     updateControlPanel() {
         // update the buffer with our current position
-        buffer.fill(this.r,this.g,this.b);
+        buffer.fill(this.r, this.g, this.b);
         buffer.rectMode(CENTER);
 
         // convert back out to buffer coords
@@ -539,8 +539,6 @@ class Robot {
             music.play();
             this.removeFromWorld();
         }
-
-
     }
 
     removeFromWorld() {
