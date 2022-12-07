@@ -446,7 +446,7 @@ function setup() {
     });
     world.add(editButton);
 
-    bgm.play();
+    // bgm.play();
 
     // const door = new Ring({
     //     x: 50,
