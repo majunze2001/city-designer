@@ -21,7 +21,7 @@ const metaData = {
     school: { width: 7.796965147803192, height: 1.3818419276179088, depth: 6.61837641158769, scaleX: 3, scaleY: 3, scaleZ: 3, color: 'white' },
     park: { width: 7.896933855929955, height: 1.8862671117854113, depth: 10.311207760524983, scaleX: 0.15, scaleY: 0.15, scaleZ: 0.15, color: 'orange' },
     stadium: { width: 7.272684335708618, height: 2.9066975116729736, depth: 7.316898584365845, scaleX: 2, scaleY: 2, scaleZ: 2, color: 'pink' },
-    road: { width: 100, height:100, color:'grey'}
+    road: { width: 10, height:10, color:'grey'}
 };
 
 let music;
@@ -110,7 +110,44 @@ function setup() {
 
             if (mode) {
                 if (choice == 'road'){
-                    roads.push(new Road(intersectionInfo.point2d.x, intersectionInfo.point2d.y));
+                    //collision detection
+                    //** still overlap sometimes
+                    let w = map(metaData[choice].width, 0, 100, 0, 512);
+                    let h = map(metaData[choice].height, 0, 100, 0, 512);
+
+                    if (getPreviewRotation() % 180 !== 0) {
+                        const t = w;
+                        w = h;
+                        h = t;
+                    }
+                    const pointsOffsets = [
+                        [0, 0],
+                        [w / 2, h / 2],
+                        [w / 2, -h / 2],
+                        [-w / 2, h / 2],
+                        [-w / 2, -h / 2],
+                    ];
+
+                    const colors = pointsOffsets.map(([x, y]) => buffer.get(intersectionInfo.point2d.x + x, intersectionInfo.point2d.y + y));
+                    const colored = colors.filter((c) => !c.every((value, index) => value === [0, 0, 0, 255][index]));
+
+                    if (colored.length > 0) {
+                        buffer.fill('red');
+                        buffer.rectMode(CENTER);
+                        buffer.rect(intersectionInfo.point2d.x, intersectionInfo.point2d.y, w, h);
+                    } else {
+                        // adding
+                        buffer.fill(metaData[choice].color);
+                        buffer.rectMode(CENTER);
+                        buffer.rect(intersectionInfo.point2d.x, intersectionInfo.point2d.y, w, h);
+                        // if the mouse is currently pressed we should create a Robot here on the floor
+                        if (mouseIsPressed && !mouseCooldown) {
+                            mouseCooldown = true;
+                            roads.push(new Road(intersectionInfo.point2d.x, intersectionInfo.point2d.y));
+                            setTimeout(() => (mouseCooldown = false), 1000);
+                        }
+                    }
+                    
                 }
                 else{
                     // collision detecting
@@ -404,7 +441,7 @@ class Road {
         this.body = new Plane({
             asset: this.asset,
             x: this.x,
-            y: 0,
+            y: 0.1,
             z: this.z,
             rotationX:-90
         });
@@ -618,3 +655,9 @@ function getDimensions(object3d) {
 function myForEach(collection, cb) {
     Array.prototype.forEach.call(collection, cb);
 }
+
+document.addEventListener('mousemove',function(){
+    if (bgm && !bgm.isPlaying()){
+        bgm.play();
+    }
+});
