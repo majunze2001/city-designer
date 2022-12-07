@@ -19,12 +19,60 @@ let container;
 const CELLSIZE = 16;
 
 const metaData = {
-    office: { width: 12.94276123046875, height: 5.017404296875001, depth: 6.608043945312501, scaleX: 0.002, scaleY: 0.002, scaleZ: 0.002, color: 'blue' },
-    apartment: { width: 5.58, height: 16.1351787109375, depth: 5.580000000000004, scaleX: 0.001, scaleY: 0.001, scaleZ: 0.001, color: 'green' },
-    hotel: { width: 6.66590234375, height: 16.248599609375, depth: 5.1300000000000034, scaleX: 0.001, scaleY: 0.001, scaleZ: 0.001, color: 'yellow' },
-    school: { width: 7.796965147803192, height: 1.3818419276179088, depth: 6.61837641158769, scaleX: 3, scaleY: 3, scaleZ: 3, color: 'white' },
-    park: { width: 7.896933855929955, height: 1.8862671117854113, depth: 10.311207760524983, scaleX: 0.15, scaleY: 0.15, scaleZ: 0.15, color: 'orange' },
-    stadium: { width: 7.272684335708618, height: 2.9066975116729736, depth: 7.316898584365845, scaleX: 2, scaleY: 2, scaleZ: 2, color: 'pink' },
+    office: {
+        width: 12.94276123046875 * 2,
+        height: 5.017404296875001 * 2,
+        depth: 6.608043945312501 * 2,
+        scaleX: 0.002 * 2,
+        scaleY: 0.002 * 2,
+        scaleZ: 0.002 * 2,
+        color: 'blue',
+    },
+    apartment: {
+        width: 5.58 * 2,
+        height: 16.1351787109375 * 2,
+        depth: 5.580000000000004 * 2,
+        scaleX: 0.001 * 2,
+        scaleY: 0.001 * 2,
+        scaleZ: 0.001 * 2,
+        color: 'green',
+    },
+    hotel: {
+        width: 6.66590234375 * 2,
+        height: 16.248599609375 * 2,
+        depth: 5.1300000000000034 * 2,
+        scaleX: 0.001 * 2,
+        scaleY: 0.001 * 2,
+        scaleZ: 0.001 * 2,
+        color: 'yellow',
+    },
+    school: {
+        width: 7.796965147803192 * 2,
+        height: 1.3818419276179088 * 2,
+        depth: 6.61837641158769 * 2,
+        scaleX: 3 * 2,
+        scaleY: 3 * 2,
+        scaleZ: 3 * 2,
+        color: 'white',
+    },
+    park: {
+        width: 7.896933855929955 * 2,
+        height: 1.8862671117854113 * 2,
+        depth: 10.311207760524983 * 2,
+        scaleX: 0.15 * 2,
+        scaleY: 0.15 * 2,
+        scaleZ: 0.15 * 2,
+        color: 'orange',
+    },
+    stadium: {
+        width: 7.272684335708618 * 2,
+        height: 2.9066975116729736 * 2,
+        depth: 7.316898584365845 * 2,
+        scaleX: 2 * 2,
+        scaleY: 2 * 2,
+        scaleZ: 2 * 2,
+        color: 'pink',
+    },
 };
 
 const brick = {
@@ -272,7 +320,12 @@ function setup() {
             console.log(`rotateLeftBtn clicked`);
             if (previewContainer.getChildren()[0]) {
                 console.log('spin');
-                previewContainer.getChildren()[0].spinY(-90);
+
+                if (choice === 'road') {
+                    previewContainer.getChildren()[0].spinZ(-90);
+                } else {
+                    previewContainer.getChildren()[0].spinY(-90);
+                }
             }
         },
     });
@@ -293,7 +346,9 @@ function setup() {
         },
         clickFunction: function (entity) {
             console.log(`rotateRightBtn clicked`);
-            if (previewContainer.getChildren()[0]) {
+            if (choice === 'road') {
+                previewContainer.getChildren()[0].spinZ(90);
+            } else {
                 previewContainer.getChildren()[0].spinY(90);
             }
         },
@@ -478,15 +533,15 @@ function displayPreview() {
     } else {
         const previewModel = new GLTF({
             asset: choice,
-            scaleX: metaData[choice].scaleX / 4,
-            scaleY: metaData[choice].scaleY / 4,
-            scaleZ: metaData[choice].scaleZ / 4,
+            scaleX: metaData[choice].scaleX / 8,
+            scaleY: metaData[choice].scaleY / 8,
+            scaleZ: metaData[choice].scaleZ / 8,
         });
         previewContainer.addChild(previewModel);
     }
 }
 function getPreviewRotation() {
-    return previewContainer.getChildren()[0].getRotationY();
+    return choice === 'road' ? previewContainer.getChildren()[0].getRotationZ() : previewContainer.getChildren()[0].getRotationY();
 }
 
 class Road {
@@ -623,7 +678,7 @@ class Building {
         this.body = new GLTF({
             asset: asset,
             x: this.x,
-            y: 0,
+            y: 0.1,
             z: this.z,
             scaleX: scaleX,
             scaleY: scaleY,
