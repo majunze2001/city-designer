@@ -10,6 +10,8 @@ let mouseCooldown = false;
 // our robot array
 let robots = [];
 let buildings = [];
+let roads = [];
+
 let house;
 let container;
 const metaData = {
@@ -19,14 +21,15 @@ const metaData = {
     school: { width: 7.796965147803192, height: 1.3818419276179088, depth: 6.61837641158769, scaleX: 3, scaleY: 3, scaleZ: 3, color: 'white' },
     park: { width: 7.896933855929955, height: 1.8862671117854113, depth: 10.311207760524983, scaleX: 0.15, scaleY: 0.15, scaleZ: 0.15, color: 'orange' },
     stadium: { width: 7.272684335708618, height: 2.9066975116729736, depth: 7.316898584365845, scaleX: 2, scaleY: 2, scaleZ: 2, color: 'pink' },
+    road: { width: 100, height:100, color:'grey'}
 };
 
 let music;
-let choice = 'office';
+let choice = 'road';
 let mode = 1;
 let previewContainer;
 function preload() {
-    music = loadSound('assets/sounds/bubble.mp3');
+    music = loadSound('assets/sounds/SimCity.mp3');
     // need bgm
 }
 
@@ -59,7 +62,7 @@ function setup() {
         asset: 'grass',
         repeatX: 100,
         repeatY: 100,
-        rotationX: -90,
+        rotationX: -90
     });
     world.add(floor);
 
@@ -104,51 +107,56 @@ function setup() {
             // .uv : an object with two properties (x & y) describing the raw textural offset (used to compute point2d)
 
             if (mode) {
-                // collision detecting
-                let w = map(metaData[choice].width, 0, 100, 0, 512);
-                let h = map(metaData[choice].depth, 0, 100, 0, 512);
-
-                if (getPreviewRotation() % 180 !== 0) {
-                    const t = w;
-                    w = h;
-                    h = t;
+                if (choice == 'road'){
+                    roads.push(new Road(intersectionInfo.point2d.x, intersectionInfo.point2d.y));
                 }
-                const pointsOffsets = [
-                    [0, 0],
-                    [w / 2, h / 2],
-                    [w / 2, -h / 2],
-                    [-w / 2, h / 2],
-                    [-w / 2, -h / 2],
-                ];
-                // get the colors of all detect positions
-                const colors = pointsOffsets.map(([x, y]) => buffer.get(intersectionInfo.point2d.x + x, intersectionInfo.point2d.y + y));
-                const colored = colors.filter((c) => !c.every((value, index) => value === [0, 0, 0, 255][index]));
-                if (colored.length > 0) {
-                    // collision
-                    buffer.fill('red');
-                    buffer.rectMode(CENTER);
-                    buffer.rect(intersectionInfo.point2d.x, intersectionInfo.point2d.y, w, h);
-                } else {
-                    // adding
-                    buffer.fill(metaData[choice].color);
-                    buffer.rectMode(CENTER);
-                    buffer.rect(intersectionInfo.point2d.x, intersectionInfo.point2d.y, w, h);
-                    // if the mouse is currently pressed we should create a Robot here on the floor
-                    if (mouseIsPressed && !mouseCooldown) {
-                        mouseCooldown = true;
-                        buildings.push(
-                            new Building(
-                                intersectionInfo.point2d.x,
-                                intersectionInfo.point2d.y,
-                                choice,
-                                metaData[choice].scaleX,
-                                metaData[choice].scaleY,
-                                metaData[choice].scaleZ,
-                                metaData[choice].color,
-                                getPreviewRotation()
-                            )
-                        );
-                        setTimeout(() => (mouseCooldown = false), 1000);
+                else{
+                    // collision detecting
+                    let w = map(metaData[choice].width, 0, 100, 0, 512);
+                    let h = map(metaData[choice].depth, 0, 100, 0, 512);
+
+                    if (getPreviewRotation() % 180 !== 0) {
+                        const t = w;
+                        w = h;
+                        h = t;
+                    }
+                    const pointsOffsets = [
+                        [0, 0],
+                        [w / 2, h / 2],
+                        [w / 2, -h / 2],
+                        [-w / 2, h / 2],
+                        [-w / 2, -h / 2],
+                    ];
+                    // get the colors of all detect positions
+                    const colors = pointsOffsets.map(([x, y]) => buffer.get(intersectionInfo.point2d.x + x, intersectionInfo.point2d.y + y));
+                    const colored = colors.filter((c) => !c.every((value, index) => value === [0, 0, 0, 255][index]));
+                    if (colored.length > 0) {
+                        // collision
+                        buffer.fill('red');
+                        buffer.rectMode(CENTER);
+                        buffer.rect(intersectionInfo.point2d.x, intersectionInfo.point2d.y, w, h);
+                    } else {
+                        // adding
+                        buffer.fill(metaData[choice].color);
+                        buffer.rectMode(CENTER);
+                        buffer.rect(intersectionInfo.point2d.x, intersectionInfo.point2d.y, w, h);
+                        // if the mouse is currently pressed we should create a Robot here on the floor
+                        if (mouseIsPressed && !mouseCooldown) {
+                            mouseCooldown = true;
+                            buildings.push(
+                                new Building(
+                                    intersectionInfo.point2d.x,
+                                    intersectionInfo.point2d.y,
+                                    choice,
+                                    metaData[choice].scaleX,
+                                    metaData[choice].scaleY,
+                                    metaData[choice].scaleZ,
+                                    metaData[choice].color,
+                                    getPreviewRotation()
+                                )
+                            );
+                            setTimeout(() => (mouseCooldown = false), 1000);
+                        }
                     }
                 }
             } else {
@@ -175,7 +183,7 @@ function setup() {
                     });
                 }
             }
-        },
+        }
     });
     world.add(panel);
 
@@ -349,6 +357,10 @@ function draw() {
     // }
     // robots = robots.filter((r) => r.x <= 50);
 
+    for( let i=0;i<roads.length;i++){
+        roads[i].updateControlPanel();
+    }
+
     const cameraWindow = document.querySelector('iframe')?.contentWindow;
     if (cameraWindow && cameraWindow.addHiro) {
         console.log('I should do something here');
@@ -372,6 +384,43 @@ function displayPreview() {
 }
 function getPreviewRotation() {
     return previewContainer.getChildren()[0].getRotationY();
+}
+
+class Road {
+    constructor(_x, _z) {
+        // convert from buffer coords (512x512) to world coords (100x100)
+        this.x = map(_x, 0, 512, -50, 50);
+        this.z = map(_z, 0, 512, -50, 50);
+        this.asset = 'road';
+
+        this.r = 211;
+        this.g = 211;
+        this.b = 211;
+
+        this.body = new Plane({
+            asset: this.asset,
+            x: this.x,
+            y: 0,
+            z: this.z,
+        });
+        world.add(this.body);
+    }
+
+    updateControlPanel() {
+        // update the buffer with our current position
+        buffer.fill(this.r,this.g,this.b);
+        buffer.rectMode(CENTER);
+
+        // convert back out to buffer coords
+        let bufferX = map(this.x, -50, 50, 0, 512);
+        let bufferY = map(this.z, -50, 50, 0, 512);
+        buffer.rect(bufferX, bufferY, 5, 5);
+    }
+
+    removeFromWorld() {
+        // remove this robot's body from the world
+        world.remove(this.body);
+    }
 }
 
 // our Robot class that will randomly wander
