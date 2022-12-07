@@ -79,6 +79,7 @@ const metaData = {
 
 const brick = {
     road: { width: 100 / (512 / CELLSIZE), height: 100 / (512 / CELLSIZE), color: 'grey' },
+    turn: { width: 100 / (512 / CELLSIZE), height: 100 / (512 / CELLSIZE), color: 'grey' },
 };
 
 let music;
@@ -88,8 +89,8 @@ let mode = 1;
 let previewContainer;
 
 function preload() {
-    // music = loadSound('assets/sounds/bubble.mp3');
-    // bgm = loadSound('assets/sounds/SimCity.mp3');
+    music = loadSound('assets/sounds/bubble.mp3');
+    bgm = loadSound('assets/sounds/SimCity.mp3');
     // need bgm
 }
 
@@ -171,7 +172,7 @@ function setup() {
             console.log(cellX, cellY);
 
             if (mode) {
-                if (choice == 'road') {
+                if (Object.hasOwn(brick,choice)) {
                     //collision detection
                     // let w = map(brick[choice].width, 0, 100, 0, 512);
                     // let h = map(brick[choice].height, 0, 100, 0, 512);
@@ -337,7 +338,7 @@ function setup() {
             if (previewContainer.getChildren()[0]) {
                 console.log('spin');
 
-                if (choice === 'road') {
+                if (Object.hasOwn(brick,choice)) {
                     previewContainer.getChildren()[0].spinZ(-90);
                 } else {
                     previewContainer.getChildren()[0].spinY(-90);
@@ -362,7 +363,7 @@ function setup() {
         },
         clickFunction: function (entity) {
             console.log(`rotateRightBtn clicked`);
-            if (choice === 'road') {
+            if (Object.hasOwn(brick,choice)) {
                 previewContainer.getChildren()[0].spinZ(90);
             } else {
                 previewContainer.getChildren()[0].spinY(90);
@@ -426,6 +427,7 @@ function setup() {
         const btn = new Plane({
             width: 0.5,
             height: 0.5,
+            asset:key,
             x: startPos.x,
             y: startPos.y,
             z: startPos.z,
@@ -475,6 +477,10 @@ function setup() {
                 buildings[0].removeFromWorld();
                 buildings.splice(0, 1);
             }
+            while (roads.length >0){
+                roads[0].removeFromWorld();
+                road.splice(0,1);
+            }
         },
     });
     world.add(clearButton);
@@ -495,7 +501,7 @@ function setup() {
     });
     world.add(editButton);
 
-    // bgm.play();
+    bgm.play();
 
     // const door = new Ring({
     //     x: 50,
@@ -546,7 +552,7 @@ function displayPreview() {
     while (previewContainer.getChildren()[0]) {
         previewContainer.removeChild(previewContainer.getChildren()[0]);
     }
-    if (choice == 'road') {
+    if (Object.hasOwn(brick,choice) ) {
         const previewModel = new Plane({
             asset: choice,
         });
@@ -562,7 +568,7 @@ function displayPreview() {
     }
 }
 function getPreviewRotation() {
-    return choice === 'road' ? previewContainer.getChildren()[0].getRotationZ() : previewContainer.getChildren()[0].getRotationY();
+    return Object.hasOwn(brick,choice) ? previewContainer.getChildren()[0].getRotationZ() : previewContainer.getChildren()[0].getRotationY();
 }
 
 class Road {
@@ -571,7 +577,7 @@ class Road {
         this.x = map(_x, 0, 512, -50, 50);
         this.z = map(_z, 0, 512, -50, 50);
         this.length = map(CELLSIZE, 0, 512, -50, 50);
-        this.asset = 'road';
+        this.asset = choice;
         this.color = 'grey';
 
         this.r = red(this.color);
@@ -797,8 +803,8 @@ function myForEach(collection, cb) {
     Array.prototype.forEach.call(collection, cb);
 }
 
-// document.addEventListener('mousemove',function(){
-//     if (bgm && !bgm.isPlaying()){
-//         bgm.play();
-//     }
-// });
+document.addEventListener('mousemove',function(){
+    if (bgm && !bgm.isPlaying()){
+        bgm.play();
+    }
+});
