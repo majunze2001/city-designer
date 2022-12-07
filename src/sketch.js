@@ -34,13 +34,14 @@ const brick = {
 };
 
 let music;
-let bgm;
+let bgm,
+    playBgm = 0;
 let choice = 'road';
 let mode = 1;
 let previewContainer;
 
 function preload() {
-    // music = loadSound('assets/sounds/bubble.mp3');
+    // bgm = loadSound('assets/sounds/bubble.mp3');
     // bgm = loadSound('assets/sounds/SimCity.mp3');
     // need bgm
 }
@@ -741,8 +742,12 @@ function myForEach(collection, cb) {
     Array.prototype.forEach.call(collection, cb);
 }
 
-// document.addEventListener('mousemove',function(){
-//     if (bgm && !bgm.isPlaying()){
-//         bgm.play();
-//     }
-// });
+function switchBgm(e) {
+    e.target.children.forEach((c) => c.classList.toggle('hidden'));
+    if (!bgm || !bgm.isLoaded()) {
+        console.log('bgm not ready');
+    } else {
+        playBgm ? bgm.pause() : bgm.play();
+        playBgm ^= 1;
+    }
+}
