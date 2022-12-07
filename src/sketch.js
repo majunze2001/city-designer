@@ -402,6 +402,7 @@ class Road {
             x: this.x,
             y: 0,
             z: this.z,
+            rotationX:-90
         });
         world.add(this.body);
     }
