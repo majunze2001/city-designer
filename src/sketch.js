@@ -563,6 +563,7 @@ class Road {
             y: 0.1,
             z: this.z,
             rotationX: -90,
+            rotationY: getPreviewRotation(),
             width: brick[choice].width,
             height: brick[choice].height,
         });
