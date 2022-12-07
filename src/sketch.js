@@ -28,7 +28,7 @@ const metaData = {
 };
 
 const brick = {
-    road: { width: 100 / CELLSIZE, height: 100 / CELLSIZE, color: 'grey' },
+    road: { width: 100 / (512 / CELLSIZE), height: 100 / (512 / CELLSIZE), color: 'grey' },
 };
 
 let music;
@@ -139,10 +139,10 @@ function setup() {
                     }
                     const pointsOffsets = [
                         [0, 0],
-                        [w / 2, h / 2],
-                        [w / 2, -h / 2],
-                        [-w / 2, h / 2],
-                        [-w / 2, -h / 2],
+                        [w / 2 - 1, h / 2 - 1],
+                        [w / 2 - 1, -h / 2 + 1],
+                        [-w / 2 + 1, h / 2 - 1],
+                        [-w / 2 + 1, -h / 2 + 1],
                     ];
 
                     const colors = pointsOffsets.map(([x, y]) => buffer.get(road_X + x, road_Y + y));
