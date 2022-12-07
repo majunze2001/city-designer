@@ -126,7 +126,7 @@ function setup() {
                 if (choice == 'road'){
                     //collision detection
                     let w = map(brick[choice].width, 0, 100, 0, 512);
-                    let h = map(brick[choice].depth, 0, 100, 0, 512);
+                    let h = map(brick[choice].height, 0, 100, 0, 512);
 
                     let road_X = cellX*CELLSIZE +CELLSIZE/2;
                     let road_Y = cellY*CELLSIZE +CELLSIZE/2;
@@ -153,7 +153,7 @@ function setup() {
                         buffer.rect(road_X, road_Y, w, h);
                     } else {
                         // adding
-                        buffer.fill(brick[road].color);
+                        buffer.fill(brick[choice].color);
                         buffer.rectMode(CENTER);
                         buffer.rect(road_X, road_Y, w, h);
                         // if the mouse is currently pressed we should create a Robot here on the floor
@@ -499,18 +499,13 @@ class Road {
         this.z = map(_z, 0, 512, -50, 50);
         this.length = map(CELLSIZE,0,512,-50,50);
         this.asset = 'road';
-
-        this.r = 211;
-        this.g = 211;
-        this.b = 211;
+        this.color = 'grey';
 
         this.body = new Plane({
             asset: this.asset,
             x: this.x,
             y: 0.1,
             z: this.z,
-            width:this.length,
-            height:this.length,
             rotationX: -90,
         });
         world.add(this.body);
