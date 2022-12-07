@@ -14,6 +14,10 @@ let roads = [];
 
 let house;
 let container;
+
+//cells in the map to enable "snapping to the center"
+const CELLSIZE = 64;
+
 const metaData = {
     office: { width: 12.94276123046875, height: 5.017404296875001, depth: 6.608043945312501, scaleX: 0.002, scaleY: 0.002, scaleZ: 0.002, color: 'blue' },
     apartment: { width: 5.58, height: 16.1351787109375, depth: 5.580000000000004, scaleX: 0.001, scaleY: 0.001, scaleZ: 0.001, color: 'green' },
@@ -109,6 +113,11 @@ function setup() {
             // .point3d : an object with three properties (x, y & z) describing where the user is touching the entity
             // .point2d : an object with two properties (x & y) describing where the user is touching the entity in 2D space (essentially where on the dynamic canvas the user is touching)
             // .uv : an object with two properties (x & y) describing the raw textural offset (used to compute point2d)
+            console.log("hello");
+            let cellX = parseInt(intersectionInfo.point2d.x / CELLSIZE);
+            let cellY = parseInt(intersectionInfo.point2d.y / CELLSIZE);
+            console.log(cellX, cellY);
+
 
             if (mode) {
                 if (choice == 'road'){
@@ -116,6 +125,9 @@ function setup() {
                     //** still overlap sometimes
                     let w = map(metaData[choice].width, 0, 100, 0, 512);
                     let h = map(metaData[choice].height, 0, 100, 0, 512);
+
+                    let road_X = cellX*CELLSIZE +CELLSIZE/2;
+                    let road_Y = cellY*CELLSIZE +CELLSIZE/2;
 
                     if (getPreviewRotation() % 180 !== 0) {
                         const t = w;
@@ -136,16 +148,16 @@ function setup() {
                     if (colored.length > 0) {
                         buffer.fill('red');
                         buffer.rectMode(CENTER);
-                        buffer.rect(intersectionInfo.point2d.x, intersectionInfo.point2d.y, w, h);
+                        buffer.rect(road_X, road_Y, w, h);
                     } else {
                         // adding
                         buffer.fill(metaData[choice].color);
                         buffer.rectMode(CENTER);
-                        buffer.rect(intersectionInfo.point2d.x, intersectionInfo.point2d.y, w, h);
+                        buffer.rect(road_X, road_Y, w, h);
                         // if the mouse is currently pressed we should create a Robot here on the floor
                         if (mouseIsPressed && !mouseCooldown) {
                             mouseCooldown = true;
-                            roads.push(new Road(intersectionInfo.point2d.x, intersectionInfo.point2d.y));
+                            roads.push(new Road(road_X, road_Y));
                             setTimeout(() => (mouseCooldown = false), 1000);
                         }
                     }
@@ -434,6 +446,7 @@ class Road {
         // convert from buffer coords (512x512) to world coords (100x100)
         this.x = map(_x, 0, 512, -50, 50);
         this.z = map(_z, 0, 512, -50, 50);
+        this.length = map(64,0,512,-50,50);
         this.asset = 'road';
 
         this.r = 211;
@@ -445,6 +458,8 @@ class Road {
             x: this.x,
             y: 0.1,
             z: this.z,
+            width:this.length,
+            height:this.length,
             rotationX: -90,
         });
         world.add(this.body);
@@ -458,7 +473,7 @@ class Road {
         // convert back out to buffer coords
         let bufferX = map(this.x, -50, 50, 0, 512);
         let bufferY = map(this.z, -50, 50, 0, 512);
-        buffer.rect(bufferX, bufferY, 5, 5);
+        buffer.rect(bufferX, bufferY, 64, 64);
     }
 
     removeFromWorld() {
