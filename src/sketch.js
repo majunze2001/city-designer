@@ -25,11 +25,13 @@ const metaData = {
 };
 
 let music;
+let bgm;
 let choice = 'road';
 let mode = 1;
 let previewContainer;
 function preload() {
-    music = loadSound('assets/sounds/SimCity.mp3');
+    music = loadSound('assets/sounds/bubble.mp3');
+    bgm = loadSound('assets/sounds/SimCity.mp3');
     // need bgm
 }
 
@@ -325,6 +327,8 @@ function setup() {
     });
     world.add(editButton);
 
+    bgm.play();
+
     // const door = new Ring({
     //     x: 50,
     //     y: 0,
@@ -498,6 +502,8 @@ class Robot {
             music.play();
             this.removeFromWorld();
         }
+
+
     }
 
     removeFromWorld() {
