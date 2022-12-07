@@ -4,4 +4,7 @@ node_modules
 
 input.css
 
+.DS_Store
+*/.DS_Store
+
 tailwind.config.js
