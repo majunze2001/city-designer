@@ -126,7 +126,7 @@ function setup() {
             if (mouseIsPressed && !mouseCooldown) {
                 mouseCooldown = true;
                 roads.push(new Road(road_X, road_Y));
-                setTimeout(() => (mouseCooldown = false), 100);
+                setTimeout(() => (mouseCooldown = false), 50);
             }
         }
     }
