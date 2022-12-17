@@ -38,7 +38,7 @@ let music;
 let bgm,
     playBgm = 0;
 let choice = 'road';
-let mode = 1;
+let addMode = 1;
 let previewContainer;
 
 function preload() {
@@ -54,40 +54,111 @@ function mouseClicked() {
     }
 }
 
-function setup() {
-    // no canvas needed
-    noCanvas();
+// document.addEventListener('DOMContentLoaded', function () {
+//     console.log(world.camera.cameraEl.components['look-controls'].yawObject);
+// });
 
-    // construct the A-Frame world
-    world = new World('VRScene');
+class Preview {
+    constructor(xOffset, yOffset, zOffset, parentObject) {
+        this.body = new Container3D({
+            x: xOffset,
+            y: yOffset,
+            z: zOffset,
+        });
+        parentObject.add(this.body);
 
-    // have the user floating above the world
-    world.setUserPosition(0, 25, 1);
+        // displayPreview();
 
-    const sky = new Sky({
-        asset: 'sky',
-    });
-    world.add(sky);
+        //preview rotate buttons
+        const rotateBtnY = 0;
 
-    // floor for placing the buildings
-    let floor = new Plane({ width: 100, height: 100, asset: 'grass', repeatX: 100, repeatY: 100, rotationX: -90 });
-    world.add(floor);
+        const rotateLeftBtn = new Tetrahedron({
+            x: -1,
+            y: rotateBtnY,
+            z: 0,
+            radius: 0.5,
+            red: 0,
+            green: 0,
+            blue: 255,
+            enterFunction: function (entity) {
+                entity.setScale(1.5, 1.5, 1.5);
+            },
+            leaveFunction: function (entity) {
+                entity.setScale(1, 1, 1);
+            },
+            clickFunction: function (entity) {
+                // console.log(`rotateLeftBtn clicked`);
+                // if (previewContainer.getChildren()[0]) {
+                //     // console.log('spin');
+                //     if (Object.hasOwn(brick, choice)) {
+                //         previewContainer.getChildren()[0].spinZ(-90);
+                //     } else {
+                //         previewContainer.getChildren()[0].spinY(-90);
+                //     }
+                // }
+            },
+        });
 
-    // sample
-    house = new GLTF({ asset: 'stadium', x: 2, y: 0, z: -5, scaleX: 2, scaleY: 2, scaleZ: 2 });
-    world.add(house);
+        const rotateRightBtn = new Tetrahedron({
+            x: 0.5,
+            y: rotateBtnY,
+            z: 0,
+            radius: 0.5,
+            red: 0,
+            green: 0,
+            blue: 255,
+            enterFunction: function (entity) {
+                entity.setScale(1.5, 1.5, 1.5);
+            },
+            leaveFunction: function (entity) {
+                entity.setScale(1, 1, 1);
+            },
+            clickFunction: function (entity) {
+                // console.log(`rotateRightBtn clicked`);
+                // if (Object.hasOwn(brick, choice)) {
+                //     previewContainer.getChildren()[0].spinZ(90);
+                // } else {
+                //     previewContainer.getChildren()[0].spinY(90);
+                // }
+            },
+        });
 
-    // box.add(house);
-    // world.add(box);
+        this.body.add(rotateLeftBtn);
+        this.body.add(rotateRightBtn);
+    }
 
-    // 2d map editor
-    // create a control panel that the user can click on
+    displayPreview() {
+        while (previewContainer.getChildren()[0]) {
+            previewContainer.removeChild(previewContainer.getChildren()[0]);
+        }
+        if (Object.hasOwn(brick, choice)) {
+            const previewModel = new Plane({
+                asset: choice,
+            });
+            previewContainer.addChild(previewModel);
+        } else {
+            const previewModel = new GLTF({
+                asset: choice,
+                scaleX: metaData[choice].scaleX / 8,
+                scaleY: metaData[choice].scaleY / 8,
+                scaleZ: metaData[choice].scaleZ / 8,
+            });
+            previewContainer.addChild(previewModel);
+        }
+    }
+}
+
+// wrap all controls in a container
+const initControlPanel = (_x, _y, _z) => {
+    const controlContainer = new Container3D({ x: _x, y: _y, z: _z });
+    world.add(controlContainer);
+    world.setUserPosition(_x, _y + 2, _z + 6);
 
     // create our off screen graphics buffer & texture for panel
     buffer = createGraphics(512, 512);
     texture = world.createDynamicTextureFromCreateGraphics(buffer);
 
-    function addRoadToWorld(entity, intersectionInfo) {
+    const addRoadToWorld = (entity, intersectionInfo) => {
         //collision detection
         let w = CELLSIZE;
         let h = CELLSIZE;
@@ -129,9 +200,9 @@ function setup() {
                 setTimeout(() => (mouseCooldown = false), 50);
             }
         }
-    }
+    };
 
-    function addBuildingToWorld(entity, intersectionInfo) {
+    const addBuildingToWorld = (entity, intersectionInfo) => {
         // collision detecting
         let w = map(metaData[choice].width, 0, 100, 0, 512);
         let h = map(metaData[choice].depth, 0, 100, 0, 512);
@@ -179,9 +250,9 @@ function setup() {
                 setTimeout(() => (mouseCooldown = false), 1000);
             }
         }
-    }
+    };
 
-    function removeEntityFromWorld(entity, intersectionInfo) {
+    const removeEntityFromWorld = (entity, intersectionInfo) => {
         //removing
         buffer.fill(255, 0, 0);
         buffer.rectMode(CENTER);
@@ -219,55 +290,57 @@ function setup() {
                 }
             });
         }
-    }
+    };
 
-    let panel = new Plane({
+    const panel = new Plane({
         width: 5,
         height: 5,
+        // relative to _x, _y, _z
         x: 0,
-        y: 25,
-        z: -5,
+        y: 2.5,
+        z: 0,
         dynamicTexture: true,
         asset: texture,
         dynamicTextureWidth: 512,
         dynamicTextureHeight: 512,
         overFunction: function (entity, intersectionInfo) {
-            // intersectionInfo is an object that contains info about how the user is
-            // interacting with this entity.  it contains the following info:
-            // .distance : a float describing how far away the user is
-            // .point3d : an object with three properties (x, y & z) describing where the user is touching the entity
-            // .point2d : an object with two properties (x & y) describing where the user is touching the entity in 2D space (essentially where on the dynamic canvas the user is touching)
-            // .uv : an object with two properties (x & y) describing the raw textural offset (used to compute point2d)
-            if (mode) {
-                if (Object.hasOwn(brick,choice)) {
+            if (addMode) {
+                if (Object.hasOwn(brick, choice)) {
+                    // add bricks
                     addRoadToWorld(entity, intersectionInfo);
                 } else {
+                    // add a building
                     addBuildingToWorld(entity, intersectionInfo);
                 }
             } else {
+                // remove road brick/building
                 removeEntityFromWorld(entity, intersectionInfo);
             }
         },
     });
-    world.add(panel);
+    controlContainer.add(panel);
 
     //  UI
 
     // preview
+    const t = new Preview(-5, 4, 0, controlContainer);
     previewContainer = new Container3D({
+        // relative to _x, _y, _z
         x: -5,
-        y: 23.5,
-        z: -5,
+        y: 1.5,
+        z: 0,
     });
-    world.add(previewContainer);
+    controlContainer.add(previewContainer);
 
     displayPreview();
 
-    // rotate button
+    //preview rotate buttons
+    const rotateBtnY = 0;
+
     const rotateLeftBtn = new Tetrahedron({
         x: -6,
-        y: 22.5,
-        z: -5,
+        y: rotateBtnY,
+        z: 0,
         radius: 0.5,
         red: 0,
         green: 0,
@@ -279,11 +352,10 @@ function setup() {
             entity.setScale(1, 1, 1);
         },
         clickFunction: function (entity) {
-            console.log(`rotateLeftBtn clicked`);
+            // console.log(`rotateLeftBtn clicked`);
             if (previewContainer.getChildren()[0]) {
-                console.log('spin');
-
-                if (Object.hasOwn(brick,choice)) {
+                // console.log('spin');
+                if (Object.hasOwn(brick, choice)) {
                     previewContainer.getChildren()[0].spinZ(-90);
                 } else {
                     previewContainer.getChildren()[0].spinY(-90);
@@ -294,8 +366,8 @@ function setup() {
 
     const rotateRightBtn = new Tetrahedron({
         x: -4.5,
-        y: 22.5,
-        z: -5,
+        y: rotateBtnY,
+        z: 0,
         radius: 0.5,
         red: 0,
         green: 0,
@@ -307,8 +379,8 @@ function setup() {
             entity.setScale(1, 1, 1);
         },
         clickFunction: function (entity) {
-            console.log(`rotateRightBtn clicked`);
-            if (Object.hasOwn(brick,choice)) {
+            // console.log(`rotateRightBtn clicked`);
+            if (Object.hasOwn(brick, choice)) {
                 previewContainer.getChildren()[0].spinZ(90);
             } else {
                 previewContainer.getChildren()[0].spinY(90);
@@ -316,11 +388,11 @@ function setup() {
         },
     });
 
-    world.add(rotateLeftBtn);
-    world.add(rotateRightBtn);
+    controlContainer.add(rotateLeftBtn);
+    controlContainer.add(rotateRightBtn);
 
     // display choices
-    const startPos = { x: 3, y: 27, z: -5 };
+    const startPos = { x: 3.5, y: 4, z: 0 };
 
     Object.entries(metaData).forEach(([key, data]) => {
         const c = color(data.color);
@@ -339,40 +411,32 @@ function setup() {
             leaveFunction: function (entity) {
                 entity.setScale(1, 1, 1);
             },
+
             clickFunction: function (entity) {
                 console.log(`${key} btn clicked`);
                 choice = key;
                 displayPreview();
-                mode = 1;
+                addMode = 1;
             },
         });
 
-        const name = new Text({
-            text: key,
-            red: 0,
-            green: 0,
-            blue: 0,
-            x: 0.8,
-            scaleX: 5,
-            scaleY: 5,
-            scaleZ: 5,
-        });
+        const name = new Text({ text: key, red: 0, green: 0, blue: 0, x: 0.8, scaleX: 5, scaleY: 5, scaleZ: 5 });
         btn.add(name);
         startPos.y -= 0.5;
-        world.add(btn);
+        controlContainer.add(btn);
     });
 
     // const startPos = { x: 3, y: 27, z: -5 };
 
-    startPos.x = 5;
-    startPos.y = 27;
+    startPos.x = 5.5;
+    startPos.y = 4;
 
     Object.entries(brick).forEach(([key, data]) => {
         const c = color(data.color);
         const btn = new Plane({
             width: 0.5,
             height: 0.5,
-            asset:key,
+            asset: key,
             x: startPos.x,
             y: startPos.y,
             z: startPos.z,
@@ -389,46 +453,47 @@ function setup() {
                 console.log(`${key} btn clicked`);
                 choice = key;
                 displayPreview();
-                mode = 1;
+                addMode = 1;
             },
         });
 
-        const name = new Text({
-            text: key,
-            red: 0,
-            green: 0,
-            blue: 0,
-            x: 0.8,
-            scaleX: 5,
-            scaleY: 5,
-            scaleZ: 5,
-        });
+        // name tag
+        const name = new Text({ text: key, red: 0, green: 0, blue: 0, x: 0.6, scaleX: 5, scaleY: 5, scaleZ: 5 });
         btn.add(name);
-        startPos.y -= 0.5;
-        world.add(btn);
+
+        startPos.y -= 1;
+        controlContainer.add(btn);
     });
 
+    const removeBtnY = 0;
+
     // when clicked this will remove all buildings from the world
-    let clearButton = new Sphere({
+    const clearButton = new Sphere({
         red: 255,
         green: 0,
         blue: 0,
         radius: 0.25,
         x: -1,
-        y: 23,
-        z: -3,
+        y: removeBtnY,
+        z: 2,
+        enterFunction: function (entity) {
+            entity.setScale(1.25, 1.25, 1.25);
+        },
+        leaveFunction: function (entity) {
+            entity.setScale(1, 1, 1);
+        },
         clickFunction: function (entity) {
             while (buildings.length > 0) {
                 buildings[0].removeFromWorld();
                 buildings.splice(0, 1);
             }
-            while (roads.length >0){
+            while (roads.length > 0) {
                 roads[0].removeFromWorld();
-                road.splice(0,1);
+                road.splice(0, 1);
             }
         },
     });
-    world.add(clearButton);
+    controlContainer.add(clearButton);
 
     const editButton = new Box({
         red: 0,
@@ -438,29 +503,56 @@ function setup() {
         height: 0.5,
         depth: 0.5,
         x: 1,
-        y: 23,
-        z: -3,
+        y: removeBtnY,
+        z: 2,
         clickFunction: function (entity) {
-            mode ^= 1;
+            addMode ^= 1;
+        },
+        enterFunction: function (entity) {
+            entity.setScale(1.25, 1.25, 1.25);
+        },
+        leaveFunction: function (entity) {
+            entity.setScale(1, 1, 1);
         },
     });
-    world.add(editButton);
+    controlContainer.add(editButton);
+};
 
-    // bgm.play();
+function setup() {
+    // no canvas needed
+    noCanvas();
 
-    // const door = new Ring({
-    //     x: 50,
-    //     y: 0,
-    //     z: -18,
-    //     radiusInner: 6,
-    //     radiusOuter: 8,
-    //     side: 'double',
-    //     red: random(255),
-    //     green: random(255),
-    //     blue: random(255),
-    //     rotationY: 90,
-    // });
-    // world.add(door);
+    // construct the A-Frame world
+    world = new World('VRScene');
+
+    // cannot rotate, uninitialized
+    // console.log(world.camera.cameraEl.components['look-controls'].yawObject);
+    // world.camera.cameraEl.object3D.rotation.set(-Math.PI / 6, 0, 0);
+
+    const sky = new Sky({
+        asset: 'sky',
+    });
+    world.add(sky);
+
+    // floor for placing the buildings
+    let floor = new Plane({ width: 100, height: 100, asset: 'grass', repeatX: 100, repeatY: 100, rotationX: -90 });
+    world.add(floor);
+
+    // sample
+    // house = new GLTF({ asset: 'stadium', x: 2, y: 0, z: -5, scaleX: 2, scaleY: 2, scaleZ: 2 });
+    // world.add(house);
+
+    // box.add(house);
+    // world.add(box);
+
+    // control panel
+
+    initControlPanel(0, 1, 0);
+    // have the user floating above the world
+
+    // world.camera.cameraEl.object3D.rotation.set(-Math.PI / 6, 0, 0);
+    // world.camera.cameraEl.setAttribute('rotation', '0,3.14,0');
+    // world.camera.cameraEl.components['look-controls'].yawObject.rotation.set(0, Math.PI / 2, 0);
 }
 
 function draw() {
@@ -497,7 +589,7 @@ function displayPreview() {
     while (previewContainer.getChildren()[0]) {
         previewContainer.removeChild(previewContainer.getChildren()[0]);
     }
-    if (Object.hasOwn(brick,choice) ) {
+    if (Object.hasOwn(brick, choice)) {
         const previewModel = new Plane({
             asset: choice,
         });
@@ -513,7 +605,7 @@ function displayPreview() {
     }
 }
 function getPreviewRotation() {
-    return Object.hasOwn(brick,choice) ? previewContainer.getChildren()[0].getRotationZ() : previewContainer.getChildren()[0].getRotationY();
+    return Object.hasOwn(brick, choice) ? previewContainer.getChildren()[0].getRotationZ() : previewContainer.getChildren()[0].getRotationY();
 }
 
 class Road {
