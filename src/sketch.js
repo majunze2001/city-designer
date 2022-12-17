@@ -16,9 +16,11 @@ let roads = [];
 
 let house;
 let container;
+let path;
 
 //cells in the map to enable "snapping to the center"
 const CELLSIZE = 16;
+// const map =
 
 const metaData = {
     office: { width: 25.8855224609375, height: 10.034808593750002, depth: 13.216087890625001, scaleX: 0.004, scaleY: 0.004, scaleZ: 0.004, color: 'blue' },
@@ -362,8 +364,6 @@ const initControlPanel = (_x, _y, _z) => {
         controlContainer.add(btn);
     });
 
-    // const startPos = { x: 3, y: 27, z: -5 };
-
     startPos.x = 5.5;
     startPos.y = 4;
 
@@ -520,6 +520,8 @@ function draw() {
 class Road {
     constructor(_x, _z, rotationY = 0) {
         // convert from buffer coords (512x512) to world coords (100x100)
+        this._x = _x;
+        this._y = _z;
         this.x = map(_x, 0, 512, -50, 50);
         this.z = map(_z, 0, 512, -50, 50);
         this.length = map(CELLSIZE, 0, 512, -50, 50);
@@ -756,5 +758,162 @@ function switchBgm(e) {
     } else {
         playBgm ? bgm.pause() : bgm.play();
         playBgm ^= 1;
+    }
+}
+
+function getPaths() {
+    const t0 = Date.now();
+    const coords = roads.map((r) => [r._x / CELLSIZE + 0.5, r._y / CELLSIZE + 0.5]);
+    // console.log(coords);
+    const indexes = coords.map(([x, y]) => (512 / CELLSIZE) * (y - 1) + x);
+    indexes.sort((x, y) => x - y);
+
+    const length = (512 * 512) / CELLSIZE / CELLSIZE + 2;
+    const roadMap = new UF(length);
+    const adj = new Array(length).fill([]);
+
+    for (const [x, y] of coords) {
+        // console.log(x, y);
+        const index = (512 / CELLSIZE) * (y - 1) + x;
+        if (y === 1) {
+            roadMap.union(0, index);
+        }
+        if (y === 32) {
+            roadMap.union(1025, index);
+        }
+
+        const neighbors = [
+            [0, 1],
+            [0, -1],
+            [1, 0],
+            [-1, 0],
+        ]
+            .map(([i, j]) => [x + i, y + j])
+            .filter(([i, j]) => i >= 1 && i <= 32 && j >= 1 && j <= 32);
+        const neighborIndexes = neighbors.map(([x, y]) => (512 / CELLSIZE) * (y - 1) + x);
+        adj[index] = neighborIndexes.filter((i) => indexes.includes(i));
+
+        adj[index].forEach((n) => {
+            roadMap.union(n, index);
+        });
+    }
+
+    const sourceParent = roadMap.find(0);
+    const connected = sourceParent === roadMap.find(1025);
+
+    const t1 = Date.now();
+    console.log(connected, '---', t1 - t0);
+    const firstLeaf = (512 / CELLSIZE) * (512 / CELLSIZE - 1) + 1;
+    if (connected) {
+        // find paths
+        /*         const nodes = indexes.filter((i) => roadMap.find(i) === sourceParent).sort((x, y) => x - y);
+        // we run DFS
+        const paths = [];
+        const colors = new Array(length).fill(0); //visited
+        const parents = new Array(length).fill(0);
+        const finishes = new Array(length).fill(0);
+        let t = 0;
+
+        const buildPath = (u) => {
+            const p = [];
+            while (u) {
+                p.push(u);
+                u = parents[u];
+            }
+            return p;
+        };
+
+        const dfsVisit = (u) => {
+            // const [x, y] = [(u % 32) + 1, Math.ceil(u / 32)];
+            t++;
+            colors[u] = 1;
+            for (let v of adj[u]) {
+                if (!colors[v]) {
+                    parents[v] = u;
+                    dfsVisit[v];
+                }
+            }
+            finishes[u] = t++;
+        };
+
+        nodes.forEach((u) => {
+            if (!colors[u]) {
+                dfsVisit(u);
+            }
+        });
+
+        nodes.sort((u, v) => finishes[u] - finishes[v]);
+        // console.log();
+        path = nodes.map((n) => [(n % 32) + 1, Math.ceil(n / 32)]); */
+
+        // recursion for finding all simple paths
+        path = [];
+        // console.log(adj.filter((a) => a.length));
+        const findPath = (u, p) => {
+            if (p.includes(u)) {
+                return;
+            }
+            // console.log(u);
+            // console.log(adj[u]);
+            for (let v of adj[u]) {
+                const q = p.slice();
+                q.push(u);
+                findPath(v, q);
+            }
+            if (u >= firstLeaf) {
+                path.push(p);
+            }
+        };
+
+        for (let i of indexes) {
+            // console.log(i);
+            if (i <= 32) {
+                findPath(i, []);
+            } else {
+                break;
+            }
+        }
+
+        const t2 = Date.now();
+        console.log(path.length, '---', t2 - t1);
+        // our visiters will not go to cycles and will not visit dead ends!
+    }
+}
+
+class Walker {
+    constructor(start, path, adj) {}
+}
+
+class UF {
+    constructor(size) {
+        this.parents = [];
+        for (let i = 0; i < size; i++) {
+            this.parents.push(i);
+        }
+        this.ranks = new Array(size).fill(0);
+    }
+
+    find(p) {
+        while (p != this.parents[p]) {
+            p = this.parents[p];
+        }
+        return p;
+    }
+
+    union(p, q) {
+        const rootP = this.find(p);
+        const rootQ = this.find(q);
+        if (rootP != rootQ) {
+            if (this.ranks[rootP] < this.ranks[rootQ]) {
+                this.parents[rootP] = rootQ;
+                // this.ranks[rootP] = this.ranks[rootQ];
+            } else if (this.ranks[rootP] > this.ranks[rootQ]) {
+                this.parents[rootQ] = rootP;
+                // this.ranks[rootQ] = this.ranks[rootP];
+            } else {
+                this.parents[rootP] = rootQ;
+                this.ranks[rootQ]++;
+            }
+        }
     }
 }
