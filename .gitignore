@@ -8,3 +8,5 @@ input.css
 */.DS_Store
 
 tailwind.config.js
+
+src/test/
