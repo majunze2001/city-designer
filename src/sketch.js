@@ -39,7 +39,6 @@ let bgm,
     playBgm = 0;
 let choice = 'road';
 let addMode = 1;
-let previewContainer;
 
 function preload() {
     music = loadSound('assets/sounds/bubble.mp3');
@@ -67,7 +66,10 @@ class Preview {
         });
         parentObject.add(this.body);
 
-        // displayPreview();
+        this.preview = new Container3D({ y: 1 });
+        this.body.add(this.preview);
+
+        this.displayPreview();
 
         //preview rotate buttons
         const rotateBtnY = 0;
@@ -86,16 +88,8 @@ class Preview {
             leaveFunction: function (entity) {
                 entity.setScale(1, 1, 1);
             },
-            clickFunction: function (entity) {
-                // console.log(`rotateLeftBtn clicked`);
-                // if (previewContainer.getChildren()[0]) {
-                //     // console.log('spin');
-                //     if (Object.hasOwn(brick, choice)) {
-                //         previewContainer.getChildren()[0].spinZ(-90);
-                //     } else {
-                //         previewContainer.getChildren()[0].spinY(-90);
-                //     }
-                // }
+            clickFunction: (entity) => {
+                this.rotatePreview(-90);
             },
         });
 
@@ -113,13 +107,8 @@ class Preview {
             leaveFunction: function (entity) {
                 entity.setScale(1, 1, 1);
             },
-            clickFunction: function (entity) {
-                // console.log(`rotateRightBtn clicked`);
-                // if (Object.hasOwn(brick, choice)) {
-                //     previewContainer.getChildren()[0].spinZ(90);
-                // } else {
-                //     previewContainer.getChildren()[0].spinY(90);
-                // }
+            clickFunction: (entity) => {
+                this.rotatePreview(90);
             },
         });
 
@@ -127,24 +116,34 @@ class Preview {
         this.body.add(rotateRightBtn);
     }
 
+    getPreview() {
+        return this.preview.getChildren()[0];
+    }
+
+    rotatePreview(deg) {
+        Object.hasOwn(brick, choice) ? this.getPreview().spinZ(deg) : this.getPreview().spinY(deg);
+    }
+
+    getPreviewRotation() {
+        return Object.hasOwn(brick, choice) ? this.getPreview().getRotationZ() : this.getPreview().getRotationY();
+    }
+
     displayPreview() {
-        while (previewContainer.getChildren()[0]) {
-            previewContainer.removeChild(previewContainer.getChildren()[0]);
+        while (this.preview.getChildren()[0]) {
+            this.preview.removeChild(this.preview.getChildren()[0]);
         }
-        if (Object.hasOwn(brick, choice)) {
-            const previewModel = new Plane({
-                asset: choice,
-            });
-            previewContainer.addChild(previewModel);
-        } else {
-            const previewModel = new GLTF({
-                asset: choice,
-                scaleX: metaData[choice].scaleX / 8,
-                scaleY: metaData[choice].scaleY / 8,
-                scaleZ: metaData[choice].scaleZ / 8,
-            });
-            previewContainer.addChild(previewModel);
-        }
+        const previewModel = Object.hasOwn(brick, choice)
+            ? new Plane({
+                  y: 0.5,
+                  asset: choice,
+              })
+            : new GLTF({
+                  asset: choice,
+                  scaleX: metaData[choice].scaleX / 8,
+                  scaleY: metaData[choice].scaleY / 8,
+                  scaleZ: metaData[choice].scaleZ / 8,
+              });
+        this.preview.addChild(previewModel);
     }
 }
 
@@ -153,6 +152,8 @@ const initControlPanel = (_x, _y, _z) => {
     const controlContainer = new Container3D({ x: _x, y: _y, z: _z });
     world.add(controlContainer);
     world.setUserPosition(_x, _y + 2, _z + 6);
+
+    const preview = new Preview(-5, 0.5, 0, controlContainer);
 
     // create our off screen graphics buffer & texture for panel
     buffer = createGraphics(512, 512);
@@ -168,7 +169,7 @@ const initControlPanel = (_x, _y, _z) => {
         let road_X = cellX * CELLSIZE + CELLSIZE / 2;
         let road_Y = cellY * CELLSIZE + CELLSIZE / 2;
 
-        if (getPreviewRotation() % 180 !== 0) {
+        if (preview.getPreviewRotation() % 180 !== 0) {
             const t = w;
             w = h;
             h = t;
@@ -196,7 +197,7 @@ const initControlPanel = (_x, _y, _z) => {
             // if the mouse is currently pressed we should create a Robot here on the floor
             if (mouseIsPressed && !mouseCooldown) {
                 mouseCooldown = true;
-                roads.push(new Road(road_X, road_Y));
+                roads.push(new Road(road_X, road_Y, preview.getPreviewRotation()));
                 setTimeout(() => (mouseCooldown = false), 50);
             }
         }
@@ -207,7 +208,7 @@ const initControlPanel = (_x, _y, _z) => {
         let w = map(metaData[choice].width, 0, 100, 0, 512);
         let h = map(metaData[choice].depth, 0, 100, 0, 512);
 
-        if (getPreviewRotation() % 180 !== 0) {
+        if (preview.getPreviewRotation() % 180 !== 0) {
             const t = w;
             w = h;
             h = t;
@@ -244,7 +245,7 @@ const initControlPanel = (_x, _y, _z) => {
                         metaData[choice].scaleY,
                         metaData[choice].scaleZ,
                         metaData[choice].color,
-                        getPreviewRotation()
+                        preview.getPreviewRotation()
                     )
                 );
                 setTimeout(() => (mouseCooldown = false), 1000);
@@ -303,6 +304,12 @@ const initControlPanel = (_x, _y, _z) => {
         asset: texture,
         dynamicTextureWidth: 512,
         dynamicTextureHeight: 512,
+        enterFunction: function (e) {
+            world.camera.cameraEl.setAttribute('look-controls', 'enabled: false');
+        },
+        leaveFunction: function (e) {
+            world.camera.cameraEl.setAttribute('look-controls', 'enabled: true');
+        },
         overFunction: function (entity, intersectionInfo) {
             if (addMode) {
                 if (Object.hasOwn(brick, choice)) {
@@ -319,77 +326,6 @@ const initControlPanel = (_x, _y, _z) => {
         },
     });
     controlContainer.add(panel);
-
-    //  UI
-
-    // preview
-    const t = new Preview(-5, 4, 0, controlContainer);
-    previewContainer = new Container3D({
-        // relative to _x, _y, _z
-        x: -5,
-        y: 1.5,
-        z: 0,
-    });
-    controlContainer.add(previewContainer);
-
-    displayPreview();
-
-    //preview rotate buttons
-    const rotateBtnY = 0;
-
-    const rotateLeftBtn = new Tetrahedron({
-        x: -6,
-        y: rotateBtnY,
-        z: 0,
-        radius: 0.5,
-        red: 0,
-        green: 0,
-        blue: 255,
-        enterFunction: function (entity) {
-            entity.setScale(1.5, 1.5, 1.5);
-        },
-        leaveFunction: function (entity) {
-            entity.setScale(1, 1, 1);
-        },
-        clickFunction: function (entity) {
-            // console.log(`rotateLeftBtn clicked`);
-            if (previewContainer.getChildren()[0]) {
-                // console.log('spin');
-                if (Object.hasOwn(brick, choice)) {
-                    previewContainer.getChildren()[0].spinZ(-90);
-                } else {
-                    previewContainer.getChildren()[0].spinY(-90);
-                }
-            }
-        },
-    });
-
-    const rotateRightBtn = new Tetrahedron({
-        x: -4.5,
-        y: rotateBtnY,
-        z: 0,
-        radius: 0.5,
-        red: 0,
-        green: 0,
-        blue: 255,
-        enterFunction: function (entity) {
-            entity.setScale(1.5, 1.5, 1.5);
-        },
-        leaveFunction: function (entity) {
-            entity.setScale(1, 1, 1);
-        },
-        clickFunction: function (entity) {
-            // console.log(`rotateRightBtn clicked`);
-            if (Object.hasOwn(brick, choice)) {
-                previewContainer.getChildren()[0].spinZ(90);
-            } else {
-                previewContainer.getChildren()[0].spinY(90);
-            }
-        },
-    });
-
-    controlContainer.add(rotateLeftBtn);
-    controlContainer.add(rotateRightBtn);
 
     // display choices
     const startPos = { x: 3.5, y: 4, z: 0 };
@@ -415,7 +351,7 @@ const initControlPanel = (_x, _y, _z) => {
             clickFunction: function (entity) {
                 console.log(`${key} btn clicked`);
                 choice = key;
-                displayPreview();
+                preview.displayPreview();
                 addMode = 1;
             },
         });
@@ -452,7 +388,7 @@ const initControlPanel = (_x, _y, _z) => {
             clickFunction: function (entity) {
                 console.log(`${key} btn clicked`);
                 choice = key;
-                displayPreview();
+                preview.displayPreview();
                 addMode = 1;
             },
         });
@@ -489,7 +425,7 @@ const initControlPanel = (_x, _y, _z) => {
             }
             while (roads.length > 0) {
                 roads[0].removeFromWorld();
-                road.splice(0, 1);
+                roads.splice(0, 1);
             }
         },
     });
@@ -546,9 +482,7 @@ function setup() {
     // world.add(box);
 
     // control panel
-
-    initControlPanel(0, 1, 0);
-    // have the user floating above the world
+    initControlPanel(0, 5, 50);
 
     // world.camera.cameraEl.object3D.rotation.set(-Math.PI / 6, 0, 0);
     // world.camera.cameraEl.setAttribute('rotation', '0,3.14,0');
@@ -583,33 +517,8 @@ function draw() {
     }
 }
 
-// helpers for preview
-
-function displayPreview() {
-    while (previewContainer.getChildren()[0]) {
-        previewContainer.removeChild(previewContainer.getChildren()[0]);
-    }
-    if (Object.hasOwn(brick, choice)) {
-        const previewModel = new Plane({
-            asset: choice,
-        });
-        previewContainer.addChild(previewModel);
-    } else {
-        const previewModel = new GLTF({
-            asset: choice,
-            scaleX: metaData[choice].scaleX / 8,
-            scaleY: metaData[choice].scaleY / 8,
-            scaleZ: metaData[choice].scaleZ / 8,
-        });
-        previewContainer.addChild(previewModel);
-    }
-}
-function getPreviewRotation() {
-    return Object.hasOwn(brick, choice) ? previewContainer.getChildren()[0].getRotationZ() : previewContainer.getChildren()[0].getRotationY();
-}
-
 class Road {
-    constructor(_x, _z) {
+    constructor(_x, _z, rotationY = 0) {
         // convert from buffer coords (512x512) to world coords (100x100)
         this.x = map(_x, 0, 512, -50, 50);
         this.z = map(_z, 0, 512, -50, 50);
@@ -627,7 +536,7 @@ class Road {
             y: 0.1,
             z: this.z,
             rotationX: -90,
-            rotationY: getPreviewRotation(),
+            rotationY: rotationY,
             width: brick[choice].width,
             height: brick[choice].height,
         });
@@ -759,8 +668,8 @@ class Building {
             z: this.z,
             visible: false,
             clickFunction: function (entity) {
-                console.log('clicked');
-                world.slideToObject(entity, 2000);
+                // console.log('clicked');
+                // world.slideToObject(entity, 2000);
             },
             width: metaData[asset].width,
             height: metaData[asset].height,
