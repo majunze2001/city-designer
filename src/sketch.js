@@ -652,6 +652,11 @@ class Robot {
 class Building {
     constructor(_x, _z, asset, scaleX, scaleY, scaleZ, color = 'blue', rotationY = 0) {
         // convert from buffer coords (512x512) to world coords (100x100)
+        // 2d
+        this._x = _x;
+        this._y = _z;
+
+        // 3d
         this.x = map(_x, 0, 512, -50, 50);
         this.z = map(_z, 0, 512, -50, 50);
         this.asset = asset;
@@ -884,6 +889,8 @@ function getPaths() {
         console.log(paths.length, '---', t2 - t1);
         console.log(paths);
         // our visiters will not go to cycles and will not visit dead ends!
+
+        // walkers.push(new Walker(random(paths)));
     }
 }
 
@@ -891,13 +898,26 @@ class Walker {
     constructor(pathIndexes) {
         this.path = pathIndexes.map((i) => [(i % 32) - 0.5, Math.ceil(i / 32) - 0.5]);
         // this.path.push([this.path[this.path]]);
-        console.log(this.path);
+        // console.log(this.path);
         this.pos = 0;
         // x and y are in 2D map
         this.x = this.path[0][0];
         this.y = 0;
-        this.speed = 0.1;
+        this.speed = 0.05;
         this.done = false;
+        this.satisfaction = 60;
+
+        // box
+        this.body = new Box({
+            x: map(this.x, 0, 32, -50, 50),
+            y: 0.5,
+            z: -50,
+            red: 255,
+            green: map(this.satisfaction, 0, 100, 0, 255),
+            blue: 0,
+        });
+
+        world.add(this.body);
     }
 
     walk() {
@@ -905,6 +925,8 @@ class Walker {
             // remove
             if (this.y >= 33) {
                 this.done = true;
+                console.log('i am removed');
+                this.removeFromWorld();
                 return;
             }
             this.y += this.speed;
@@ -919,13 +941,39 @@ class Walker {
         } else if (Math.abs(this.y - nextY) <= this.speed) {
             this.x += this.x < nextX ? this.speed : -this.speed;
         }
+
+        // move in 3d
+
+        const _3dx = map(this.x, 0, 32, -50, 50);
+        const _3dz = map(this.y, 0, 32, -50, 50);
+        this.body.setX(_3dx);
+        this.body.setZ(_3dz);
+        this.body.setGreen(map(this.satisfaction, 0, 100, 0, 255));
+
+        // satisfaction logic
+        let found = false;
+        buildings.forEach((b) => {
+            const d = dist(b.x, b.z, _3dx, _3dz);
+            if (d < 20) {
+                this.satisfaction = constrain(this.satisfaction + 1, 0, 100);
+                found = true || found;
+            }
+        });
+        if (!found) {
+            this.satisfaction = constrain(this.satisfaction - 2, 0, 100);
+        }
     }
 
     display() {
         buffer.rectMode(CENTER);
-        buffer.fill('yellow');
+        buffer.fill(255, map(this.satisfaction, 0, 100, 0, 255), 0);
         // buffer.rect(map(this.x, 0, 32, 0, 512), this.y, 8, 8);
         buffer.rect(this.x * CELLSIZE, this.y * CELLSIZE, 8, 8);
+    }
+
+    removeFromWorld() {
+        // remove this walker's body from the world
+        world.remove(this.body);
     }
 }
 
