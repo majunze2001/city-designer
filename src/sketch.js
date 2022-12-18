@@ -16,7 +16,8 @@ let roads = [];
 
 let house;
 let container;
-let path;
+let paths;
+let walkers = [];
 
 //cells in the map to enable "snapping to the center"
 const CELLSIZE = 16;
@@ -387,6 +388,7 @@ const initControlPanel = (_x, _y, _z) => {
             },
             clickFunction: function (entity) {
                 console.log(`${key} btn clicked`);
+                paths = undefined;
                 choice = key;
                 preview.displayPreview();
                 addMode = 1;
@@ -419,6 +421,7 @@ const initControlPanel = (_x, _y, _z) => {
             entity.setScale(1, 1, 1);
         },
         clickFunction: function (entity) {
+            paths = undefined;
             while (buildings.length > 0) {
                 buildings[0].removeFromWorld();
                 buildings.splice(0, 1);
@@ -497,18 +500,20 @@ function draw() {
     }
 
     // console.log(world.camera.cameraEl.object3D.rotation);
-    // robots.forEach((b) => {
-    //     b.updateControlPanel();
-    //     b.move();
-    // });
-    // if (frameCount % 30 === 0) {
-    //     robots.push(new Robot());
-    // }
-    // robots = robots.filter((r) => r.x <= 50);
 
     for (let i = 0; i < roads.length; i++) {
         roads[i].updateControlPanel();
     }
+
+    walkers.forEach((w) => {
+        w.display();
+        w.walk();
+    });
+    if (paths && paths[0] && frameCount % 30 === 0) {
+        console.log('add walker');
+        walkers.push(new Walker(random(paths)));
+    }
+    walkers = walkers.filter((w) => !w.done);
 
     const cameraWindow = document.querySelector('iframe')?.contentWindow;
     if (cameraWindow && cameraWindow.addHiro) {
@@ -847,7 +852,7 @@ function getPaths() {
         path = nodes.map((n) => [(n % 32) + 1, Math.ceil(n / 32)]); */
 
         // recursion for finding all simple paths
-        path = [];
+        paths = [];
         // console.log(adj.filter((a) => a.length));
         const findPath = (u, p) => {
             if (p.includes(u)) {
@@ -861,7 +866,8 @@ function getPaths() {
                 findPath(v, q);
             }
             if (u >= firstLeaf) {
-                path.push(p);
+                p.push(u);
+                paths.push(p);
             }
         };
 
@@ -875,13 +881,52 @@ function getPaths() {
         }
 
         const t2 = Date.now();
-        console.log(path.length, '---', t2 - t1);
+        console.log(paths.length, '---', t2 - t1);
+        console.log(paths);
         // our visiters will not go to cycles and will not visit dead ends!
     }
 }
 
 class Walker {
-    constructor(start, path, adj) {}
+    constructor(pathIndexes) {
+        this.path = pathIndexes.map((i) => [(i % 32) - 0.5, Math.ceil(i / 32) - 0.5]);
+        // this.path.push([this.path[this.path]]);
+        console.log(this.path);
+        this.pos = 0;
+        // x and y are in 2D map
+        this.x = this.path[0][0];
+        this.y = 0;
+        this.speed = 0.1;
+        this.done = false;
+    }
+
+    walk() {
+        if (this.pos >= this.path.length - 1) {
+            // remove
+            if (this.y >= 33) {
+                this.done = true;
+                return;
+            }
+            this.y += this.speed;
+            return;
+        }
+        const [nextX, nextY] = this.path[this.pos + 1];
+        // === does not work due to floating point not precise
+        if (Math.abs(this.x - nextX) <= this.speed && Math.abs(this.y - nextY) <= this.speed) {
+            this.pos++;
+        } else if (Math.abs(this.x - nextX) <= this.speed) {
+            this.y += this.y < nextY ? this.speed : -this.speed;
+        } else if (Math.abs(this.y - nextY) <= this.speed) {
+            this.x += this.x < nextX ? this.speed : -this.speed;
+        }
+    }
+
+    display() {
+        buffer.rectMode(CENTER);
+        buffer.fill('yellow');
+        // buffer.rect(map(this.x, 0, 32, 0, 512), this.y, 8, 8);
+        buffer.rect(this.x * CELLSIZE, this.y * CELLSIZE, 8, 8);
+    }
 }
 
 class UF {
