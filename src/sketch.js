@@ -72,9 +72,6 @@ class Preview {
         this.preview = new Container3D({ y: 1 });
         this.body.add(this.preview);
 
-<<<<<<< Updated upstream
-        this.displayPreview();
-=======
     // //disable mouse camera controls
     // world.camera.cameraEI.removeAttribute('look-controls');
 
@@ -82,7 +79,6 @@ class Preview {
         asset: 'sky',
     });
     world.add(sky);
->>>>>>> Stashed changes
 
         //preview rotate buttons
         const rotateBtnY = 0;
