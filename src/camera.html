@@ -107,19 +107,31 @@
             console.log(b);
             console.log(g);
 
-            let boys = ['goodB','hotelB','parkB','roadB','stadiumB','welcomeB'];
-            let girls = ['apartmentG','goodG','officeG','parkG','schoolG','welcomeG'];
+            let boys = ['hotelB','roadB','stadiumB'];
+            let girls = ['apartmentG','officeG','schoolG'];
 
             if (window.parent.toPlay) {
                 document.querySelector(`#${window.parent.toPlay}`).play();
 
+                //welcome, good, park,
                 if(boys.includes(window.parent.toPlay)){
                     document.getElementById('boy').style.display = 'block';
                     document.getElementById('girl').style.display = 'none';
                 }
-                else{
+                else if(girls.includes(window.parent.toPlay)){
                     document.getElementById('girl').style.display = 'block';
                     document.getElementById('boy').style.display = 'none';
+                }
+                else{
+                    let rnd = Math.floor(Math.random()*2);
+                    if(rnd == 0){
+                        document.getElementById('boy').style.display = 'block';
+                        document.getElementById('girl').style.display = 'none';
+                    }
+                    else{
+                        document.getElementById('girl').style.display = 'block';
+                        document.getElementById('boy').style.display = 'none';
+                    }
                 }
             }
 
