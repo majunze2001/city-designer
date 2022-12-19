@@ -18,6 +18,7 @@ let house;
 let container;
 let paths;
 let walkers = [];
+// let testing = false;
 
 //cells in the map to enable "snapping to the center"
 const CELLSIZE = 16;
@@ -31,7 +32,7 @@ const metaData = {
     park: { width: 15.79386771185991, height: 3.7725342235708226, depth: 20.622415521049966, scaleX: 0.3, scaleY: 0.3, scaleZ: 0.3, color: 'orange' },
     stadium: { width: 14.545368671417236, height: 5.813395023345947, depth: 14.63379716873169, scaleX: 4, scaleY: 4, scaleZ: 4, color: 'pink' },
 };
-
+let testData = Object.fromEntries(Object.keys(metaData).map((k) => [k, 0]));
 const brick = {
     road: { width: 100 / (512 / CELLSIZE), height: 100 / (512 / CELLSIZE), color: 'grey' },
     turn: { width: 100 / (512 / CELLSIZE), height: 100 / (512 / CELLSIZE), color: 'grey' },
@@ -498,6 +499,8 @@ function setup() {
     for (const [x, y] of testRoads) {
         roads.push(new Road(x, y));
     }
+
+    this.toPlay = random(['welcomeB', 'welcomeG']);
 }
 
 function draw() {
@@ -517,11 +520,23 @@ function draw() {
         w.display();
         w.walk();
     });
-    if (paths && paths[0] && frameCount % 100 === 0) {
+    if (paths && paths[0] && walkers.length < 20 && frameCount % 100 === 0) {
         console.log('add walker');
         walkers.push(new Walker(random(paths)));
     }
+    let preL = walkers.length;
     walkers = walkers.filter((w) => !w.done);
+    if (preL && !walkers.length) {
+        //
+        console.log(
+            Object.entries(testData).reduce(
+                ([prevK, prevV], [k, v]) => {
+                    return v > prevV ? [k, v] : [prevK, prevV];
+                },
+                ['', 0]
+            )
+        );
+    }
 
     const cameraWindow = document.querySelector('iframe')?.contentWindow;
     if (cameraWindow && cameraWindow.addHiro) {
@@ -567,88 +582,6 @@ class Road {
         let bufferX = map(this.x, -50, 50, 0, 512);
         let bufferY = map(this.z, -50, 50, 0, 512);
         buffer.rect(bufferX, bufferY, CELLSIZE, CELLSIZE);
-    }
-
-    removeFromWorld() {
-        // remove this robot's body from the world
-        world.remove(this.body);
-    }
-}
-
-// our Robot class that will randomly wander
-class Robot {
-    constructor() {
-        // convert from buffer coords (512x512) to world coords (100x100)
-        this.x = -50;
-        this.z = -15;
-        this.noiseLocationX = random(1000);
-        this.noiseLocationZ = random(1000);
-
-        // pick a color for this robot
-        this.r = random(255);
-        this.g = random(255);
-        this.b = random(255);
-
-        this.body = new Container3D({
-            x: this.x,
-            y: 0.5,
-            z: this.z,
-        });
-        const head = new Dodecahedron({
-            x: 0,
-            y: 1,
-            z: -5,
-            radius: 0.5,
-            red: this.r,
-            green: this.g,
-            blue: this.b,
-        });
-        this.body.add(head);
-        const trunk = new Cylinder({
-            x: 0,
-            y: 0,
-            z: -5,
-            red: random(255),
-            green: random(255),
-            blue: random(255),
-            radius: 0.5,
-            clickFunction: function (entity) {
-                console.log('robot clicked');
-                this.speed = 0.4;
-                entity.setBlue(0);
-                entity.setGreen(0);
-                entity.setRed(255);
-            },
-        });
-        this.body.add(trunk);
-        world.add(this.body);
-    }
-
-    updateControlPanel() {
-        // update the buffer with our current position
-        buffer.fill(this.r, this.g, this.b);
-        buffer.rectMode(CENTER);
-
-        // convert back out to buffer coords
-        let bufferX = map(this.x, -50, 50, 0, 512);
-        let bufferY = map(this.z, -50, 50, 0, 512);
-        buffer.rect(bufferX, bufferY, 5, 5);
-    }
-
-    move() {
-        // go towards our destination
-        this.x += this.speed || map(noise(this.noiseLocationX), 0, 1, 0, 0.2);
-        this.z = constrain(map(noise(this.noiseLocationZ), 0, 1, -0.1, 0.1) + this.z, -18, -12);
-        // update our position
-        this.body.setPosition(this.x, 0.5, this.z);
-
-        this.noiseLocationZ += 0.01;
-        this.noiseLocationX += 0.01;
-        // have we arrived?  if so, remove
-        if (this.x > 50) {
-            music.play();
-            this.removeFromWorld();
-        }
     }
 
     removeFromWorld() {
@@ -756,7 +689,7 @@ function switchCamera() {
         const camera = document.body.appendChild(document.createElement('iframe'));
         camera.src = 'camera.html';
         // document.querySelector('iframe').contentWindow.toPlay = 'hotelB';
-        this.toPlay = 'hotelB';
+        // this.toPlay = 'hotelB';
     }
 }
 
@@ -902,7 +835,8 @@ function getPaths() {
 
         const t2 = Date.now();
         console.log(paths.length, '---', t2 - t1);
-        console.log(paths);
+        testData = Object.fromEntries(Object.keys(metaData).map((k) => [k, 0]));
+        // console.log(paths);
         // our visiters will not go to cycles and will not visit dead ends!
 
         // walkers.push(new Walker(random(paths)));
@@ -1025,6 +959,11 @@ class Walker {
 
     removeFromWorld() {
         // remove this walker's body from the world
+        Object.keys(testData).forEach((k) => {
+            if (this.satisfaction[k] < 0) {
+                testData[k]++;
+            }
+        });
         world.remove(this.body);
     }
 }
