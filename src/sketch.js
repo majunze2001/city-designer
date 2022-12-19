@@ -522,8 +522,8 @@ function draw() {
         w.display();
         w.walk();
     });
-    if (paths && paths[0] && walkerCount < maxWalker && frameCount % 100 === 0) {
-        //&& random() < 0.75
+    if (paths && paths[0] && walkerCount < maxWalker && frameCount % 100 === 0 && random() < 0.5) {
+        //
         console.log('add walker');
         walkerCount++;
         walkers.push(new Walker(random(paths)));
@@ -539,6 +539,7 @@ function draw() {
             // hotel/apart/...
         );
         this.toPlay = maxVal === 0 ? 'good' : maxKey;
+        console.log(this.toPlay);
     }
 
     const cameraWindow = document.querySelector('iframe')?.contentWindow;
@@ -848,7 +849,7 @@ function getPaths() {
 
 class Walker {
     static maxSatisfactory = {
-        office: 150,
+        office: 400,
         apartment: 150,
         hotel: 250,
         school: 400,
@@ -891,6 +892,8 @@ class Walker {
                 console.log('i am removed');
                 // console.log(testData);
                 this.removeFromWorld();
+                console.log(this.satisfaction);
+                console.log(testData);
                 return;
             }
             this.y += this.speed;
@@ -937,7 +940,7 @@ class Walker {
         const found = Object.fromEntries(Object.keys(Walker.maxSatisfactory).map((k) => [k, false]));
         buildings.forEach((b) => {
             const d = dist(b.x, b.z, _3dx, _3dz);
-            if (d < 10) {
+            if (d < 25) {
                 // find
                 this.satisfaction[b.asset]++; //constrain later
                 found[b.asset] = true;
