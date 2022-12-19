@@ -4,35 +4,59 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Camera</title>
+        <title>Help</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="cam.css" />
 
         <script src="https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/addons/p5.sound.min.js"></script>
         <!-- A-Frame core library -->
         <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
 
-        <!-- AR.js Library -->
-        <!-- documentation:  https://ar-js-org.github.io/AR.js-Docs/ -->
-        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+        <!-- AR.js Library  documentation:  https://ar-js-org.github.io/AR.js-Docs/
+        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script> -->
 
         <!-- AFrameP5 AR library -->
         <!-- documentation:  https://cs.nyu.edu/~kapp/aframep5-ar -->
         <script src="https://craignyu.github.io/aframep5-ar/libraries/aframep5_ar-v0.4.js"></script>
 
         <script>
-            window.hiroVisCount = 0;
+            //window.hiroVisCount = 0;
 
             // create a variable to hold our world object
-            let world;
+            //let world;
 
             // create a variable to hold our marker
-            let hiroMarker;
+            //let hiroMarker;
+            let rnd = parseInt(Math.random(0,2));
+            let avatar1, avatar2;
+            let a1, a2;
+            let attached,at;
 
+            function preload(){
+                //avatar1 = loadImage('assets/images/b.gif');
+                let a1 = createImg('assets/images/b.gif').id();
+                // avatar2 = loadImage('assets/images/g.gif');
+                //a2 = createImg('assets/images/a.gif');
+                bg = loadSound('assets/sounds/boy_sounds/welcome.wav');
+            }
             function setup() {
+                a1.style.margin = "auto";
+                //let cnv = createCanvas(800,600);
+                //background(0);
+                // if (rnd == 1){
+                //     // attached = avatar1;
+                //     at = a1;
+                // }else{
+                //     // attached = avatar2;
+                //     at = a2;
+                // }
                 // create our world (this also creates a p5 canvas for us)
-                world = new World('ARScene');
+                //world = new World('ARScene');
 
                 // grab a reference to the marker that we set up on the HTML side (connect to it using its 'id')
-                hiroMarker = world.getMarker('hiro');
+                //hiroMarker = world.getMarker('hiro');
 
                 // // create some geometry to add to our marker
                 // let cube = new Box({
@@ -50,27 +74,59 @@
 
                 // // add the cube to our marker
                 // marker.add(cube);
+                
             }
 
             function draw() {
-                if (hiroMarker.isVisible()) {
-                    window.hiroVisCount++;
-                }
-                if (window.hiroVisCount >= 120) {
-                    window.addHiro = true;
-                    window.hiroVisCount = 0;
-                }
+                //imageMode(CENTER);
+                //image(avatar1, 400,300);
+                a1.position(width/2,0);
+                //bg.play();
+                // if (hiroMarker.isVisible()) {
+                //     window.hiroVisCount++;
+                // }
+                // if (window.hiroVisCount >= 120) {
+                //     window.addHiro = true;
+                //     window.hiroVisCount = 0;
+                // }
             }
         </script>
+
     </head>
     <body>
         <!-- A-Frame Scene -->
-        <a-scene id="ARScene" embedded arjs>
-            <!-- markers that we are tracking with a link to the pattern file the AR.js library should be looking for -->
-            <a-marker id="hiro" type="pattern" url="markers/patt.hiro"></a-marker>
-
-            <!-- default camera entity (leave this and don't change it) -->
+        <!-- <a-scene id="ARScene" embedded arjs>
+               <a-marker id="hiro" type="pattern" url="markers/patt.hiro"></a-marker>
             <a-entity camera></a-entity>
-        </a-scene>
+        </a-scene> -->
+        <h1 style="margin-left:25%">Welcome to City Designer</h1>
+
+    <div style="width:60%;margin:auto;text-align:justify">
+        <p>This is the city of your dream.</p>
+        <br>
+        <p>Inspired by the video game SimCity, this project allows players to design the city they have been dreaming about in VR. 
+            Players are encouraged to manipualte the 2D panel and set up different types of buildings in the city, including office, 
+            apartment, park, school, stadium etc. They can also pave roads that run across the city, which allow cars to go through and
+            drive around the town, rating how satisfied they are with this city players have constructed.
+        </p>
+        <p>With the left and right arrow keys besides the panel, players can rotate to see how they would like the place the buildings or
+            pave the road. Buildings may not intersect with each other nor should they be overlapped over the roads. When paving the roads, 
+            remember that only roads that perfectly go down from top to bottom would have cars go across. 
+        </p>
+        <p>Once players are happy with what they have, clicking "View" button allows they to see the city in VR/ 3D mode while clicking "edit" button would bring them back.
+            Background music is subject to be played or turned down if toggled it on and off. If players want to modify the current designs, clicking the green box helps them
+            to make partial changes on the buildings/roads they have previously built; if players want a complete start over, clicking the red circle button would erase everything on the panel.
+        </p>
+        <p>
+            To have the perfect rating, players must have placed a diversity of buildings in the city so the basic needs of citizens could be met.
+            If players' ever feel confused about what is missing -- pay attention to the Mayor's reaction. They would give out opinions on how the city could be improved. 
+        </p>
+
+        <br>
+        <p>
+            Have fun! The city is your oyster.
+        </p>
+     </div>
+        
     </body>
 </html>

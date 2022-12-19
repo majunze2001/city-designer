@@ -1,0 +1,91 @@
+	/*fonts*/
+/*	@font-face{
+		font-family:'Cookie';
+		src:url(fonts/Cookie-Regular.ttf);
+		font-style:normal;
+		font-weight：100;
+	}
+
+	@font-face{
+		font-family:'DMSerif';
+		src:url(fonts/DMSerifDisplay-Regular.ttf);
+		font-style:normal;
+		font-weight:600;
+	}*/
+
+	@import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
+
+	/*text*/
+	body{
+		margin-top: 0; 
+		padding-top: 0; 
+		margin-bottom: 0; 
+		padding-bottom: 0;
+	}
+
+	p{
+		font-family:'Russo One',sans-serif;
+		font-weight:400;
+		color: rgb(148, 131, 92);
+		font-size: 18px;
+	}
+
+	li{
+		font-family:'Russo One',sans-serif;
+		font-weight:100;
+		color: rgb(148, 131, 92);
+		font-size: 18px;
+	}
+
+	ol{
+		font-family:'Russo One',sans-serif;
+		font-weight:100;
+		color: rgb(148, 131, 92);
+		font-size: 18px;
+	}
+
+	ul{
+		font-family:'Russo One',sans-serif;
+		font-weight:100;
+		color: rgb(148, 131, 92);
+		font-size: 18px;
+	}
+
+	h2,h3,h4,h6{	
+		font-family: 'Russo One', sans-serif;
+		font-weight:600;
+		color: rgb(105,88,63);
+	}
+
+	h6{
+		font-size: 0.8em;
+	}
+
+	h1{
+		font-family: 'Russo One', sans-serif;
+		font-weight:600;
+		/*color: rgb(197,173,121);*/
+		color: rgba(105,88,63,0.9);
+		font-size:50px;
+		text-shadow: 8px 6px 10px rgba(197,173,121,0.7);
+	}
+	h2{
+		font-size:30px;
+	}
+
+	a{
+		font-family: 'DMSerif';
+		font-weight:100;
+		color: rgb(200,161,96);
+		font-size:30px;
+		text-decoration:none;
+	}
+	a:active{
+		color: rgb(78, 80, 84);
+	}
+		
+		
+
+		
+
+
