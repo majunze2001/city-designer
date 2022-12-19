@@ -478,18 +478,22 @@ function setup() {
     world.add(floor);
 
     // sample
-    // house = new GLTF({ asset: 'stadium', x: 2, y: 0, z: -5, scaleX: 2, scaleY: 2, scaleZ: 2 });
+    // house = new GLTF({ asset: 'car', x: 2, y: 0.6, z: -5, scaleX: 0.005, scaleY: 0.005, scaleZ: 0.005, rotationY: -90 });
     // world.add(house);
 
     // box.add(house);
     // world.add(box);
 
     // control panel
-    initControlPanel(0, 5, 50);
+    initControlPanel(0, 15, 55);
 
     // world.camera.cameraEl.object3D.rotation.set(-Math.PI / 6, 0, 0);
     // world.camera.cameraEl.setAttribute('rotation', '0,3.14,0');
     // world.camera.cameraEl.components['look-controls'].yawObject.rotation.set(0, Math.PI / 2, 0);
+    const testRoads = [[72,8],[72,24],[72,40],[72,56],[72,72],[72,88],[72,120],[72,136],[72,152],[72,168],[72,184],[72,216],[72,232],[72,104],[72,200],[88,232],[104,232],[152,232],[168,232],[184,232],[200,232],[216,232],[232,232],[120,232],[136,232],[232,248],[232,264],[232,280],[232,296],[232,312],[232,328],[232,344],[232,360],[216,360],[200,360],[184,360],[152,360],[136,360],[120,360],[104,360],[88,360],[72,360],[168,360],[72,376],[72,392],[72,408],[72,424],[72,440],[72,456],[72,472],[72,488],[72,504]];
+    for (const [x, y] of testRoads) {
+        roads.push(new Road(x, y));
+    }
 }
 
 function draw() {
@@ -509,7 +513,7 @@ function draw() {
         w.display();
         w.walk();
     });
-    if (paths && paths[0] && frameCount % 30 === 0) {
+    if (paths && paths[0] && frameCount % 100 === 0) {
         console.log('add walker');
         walkers.push(new Walker(random(paths)));
     }
@@ -815,6 +819,7 @@ function getPaths() {
     console.log(connected, '---', t1 - t0);
     const firstLeaf = (512 / CELLSIZE) * (512 / CELLSIZE - 1) + 1;
     if (connected) {
+        console.log(JSON.stringify(roads.map((r) => [r._x, r._y])));
         // find paths
         /*         const nodes = indexes.filter((i) => roadMap.find(i) === sourceParent).sort((x, y) => x - y);
         // we run DFS
@@ -895,27 +900,30 @@ function getPaths() {
 }
 
 class Walker {
+    static maxSchool = 60;
+    static maxPark = 10;
     constructor(pathIndexes) {
         this.path = pathIndexes.map((i) => [(i % 32) - 0.5, Math.ceil(i / 32) - 0.5]);
-        // this.path.push([this.path[this.path]]);
-        // console.log(this.path);
+
+        this.path.unshift([this.path[0][0],-0.5]);
+
         this.pos = 0;
         // x and y are in 2D map
         this.x = this.path[0][0];
-        this.y = 0;
-        this.speed = 0.05;
+        this.y = this.path[0][1];
+        this.speed = 0.025;
         this.done = false;
-        this.satisfaction = 60;
 
-        // box
-        this.body = new Box({
-            x: map(this.x, 0, 32, -50, 50),
-            y: 0.5,
-            z: -50,
-            red: 255,
-            green: map(this.satisfaction, 0, 100, 0, 255),
-            blue: 0,
-        });
+        // spinning for animation
+        this.spinSpeed = 5;
+        this.spinDeg = 0;
+        this.dx = 0; //[dx, dy]
+        this.dy = 1;
+
+        this.satisfaction = 60;
+        this.sat = { school: 30, park: 60, apartment: 20, office: 15 };
+
+        this.body = new GLTF({ asset: 'car', x: map(this.x, 0, 32, -50, 50), y: 0.6, z: -50, scaleX: 0.005, scaleY: 0.005, scaleZ: 0.005, rotationY: -90 });
 
         world.add(this.body);
     }
@@ -933,9 +941,30 @@ class Walker {
             return;
         }
         const [nextX, nextY] = this.path[this.pos + 1];
+        if (this.spinDeg) {
+            const d = this.spinDeg > 0 ? -this.spinSpeed : this.spinSpeed;
+            this.body.spinY(d);
+            this.spinDeg += d;
+        }
         // === does not work due to floating point not precise
         if (Math.abs(this.x - nextX) <= this.speed && Math.abs(this.y - nextY) <= this.speed) {
             this.pos++;
+            if(this.pos<this.path.length-1){
+                const nextDx = this.path[this.pos + 1][0] - this.path[this.pos][0];
+                const nextDy = this.path[this.pos + 1][1] - this.path[this.pos][1];
+                if (this.dx !== nextDx || this.dy !== nextDy) {
+                    // rotate
+                    if (this.dx === -1 || this.dy === 1) {
+                        this.spinDeg = -90 * (nextDx || nextDy);
+                    } else {
+                        this.spinDeg = 90 * (nextDx || nextDy);
+                    }
+                    this.dx = nextDx;
+                    this.dy = nextDy
+                }
+            }
+
+            
         } else if (Math.abs(this.x - nextX) <= this.speed) {
             this.y += this.y < nextY ? this.speed : -this.speed;
         } else if (Math.abs(this.y - nextY) <= this.speed) {
