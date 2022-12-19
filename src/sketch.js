@@ -18,6 +18,8 @@ let house;
 let container;
 let paths;
 let walkers = [];
+let walkerCount = 0;
+const maxWalker = 10;
 // let testing = false;
 
 //cells in the map to enable "snapping to the center"
@@ -500,7 +502,7 @@ function setup() {
         roads.push(new Road(x, y));
     }
 
-    this.toPlay = random(['welcomeB', 'welcomeG']);
+    this.toPlay = 'welcome';
 }
 
 function draw() {
@@ -520,22 +522,23 @@ function draw() {
         w.display();
         w.walk();
     });
-    if (paths && paths[0] && walkers.length < 20 && frameCount % 100 === 0) {
+    if (paths && paths[0] && walkerCount < maxWalker && frameCount % 100 === 0) {
+        //&& random() < 0.75
         console.log('add walker');
+        walkerCount++;
         walkers.push(new Walker(random(paths)));
     }
     let preL = walkers.length;
     walkers = walkers.filter((w) => !w.done);
-    if (preL && !walkers.length) {
-        //
-        console.log(
-            Object.entries(testData).reduce(
-                ([prevK, prevV], [k, v]) => {
-                    return v > prevV ? [k, v] : [prevK, prevV];
-                },
-                ['', 0]
-            )
+    if (walkerCount === maxWalker && preL && !walkers.length) {
+        const [maxKey, maxVal] = Object.entries(testData).reduce(
+            ([prevK, prevV], [k, v]) => {
+                return v > prevV ? [k, v] : [prevK, prevV];
+            },
+            ['', 0]
+            // hotel/apart/...
         );
+        this.toPlay = maxVal === 0 ? 'good' : maxKey;
     }
 
     const cameraWindow = document.querySelector('iframe')?.contentWindow;
@@ -840,6 +843,7 @@ function getPaths() {
         // our visiters will not go to cycles and will not visit dead ends!
 
         // walkers.push(new Walker(random(paths)));
+        walkerCount = 0;
     }
 }
 
@@ -863,6 +867,7 @@ class Walker {
         this.x = this.path[0][0];
         this.y = this.path[0][1];
         this.speed = 0.025;
+        // this.speed = 0.1;
         this.done = false;
 
         // spinning for animation
@@ -885,6 +890,7 @@ class Walker {
             if (this.y >= 33) {
                 this.done = true;
                 console.log('i am removed');
+                // console.log(testData);
                 this.removeFromWorld();
                 return;
             }
@@ -932,7 +938,7 @@ class Walker {
         const found = Object.fromEntries(Object.keys(Walker.maxSatisfactory).map((k) => [k, false]));
         buildings.forEach((b) => {
             const d = dist(b.x, b.z, _3dx, _3dz);
-            if (d < 20) {
+            if (d < 10) {
                 // find
                 this.satisfaction[b.asset]++; //constrain later
                 found[b.asset] = true;
