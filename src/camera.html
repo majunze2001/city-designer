@@ -70,7 +70,7 @@
 
         <div style="width: 60%; margin: auto; text-align: justify">
             <p>This is the city of your dream.</p>
-            <br />
+
             <p>
                 Inspired by the video game SimCity, this project allows players to design the city they have been dreaming about in VR. Players are encouraged
                 to manipualte the 2D panel and set up different types of buildings in the city, including office, apartment, park, school, stadium etc. They can
@@ -78,24 +78,27 @@
                 players have constructed.
             </p>
             <p>
-                With the left and right arrow keys besides the panel, players can rotate to see how they would like the place the buildings or pave the road.
+                With the left and right arrow keys besides the panel, players can rotate to see how they would like to place the buildings or pave the road.
                 Buildings may not intersect with each other nor should they be overlapped over the roads. When paving the roads, remember that only roads that
                 perfectly go down from top to bottom would have cars go across.
             </p>
             <p>
                 Once players are happy with what they have, clicking "View" button allows they to see the city in VR/ 3D mode while clicking "edit" button would
-                bring them back. Background music is subject to be played or turned down if toggled it on and off. If players want to modify the current
+                bring them back. Background music is subject to be played or turned down when players toggle it on and off. If players want to modify the current
                 designs, clicking the green box helps them to make partial changes on the buildings/roads they have previously built; if players want a complete
-                start over, clicking the red circle button would erase everything on the panel.
+                start over, clicking the red sphere would erase everything on the panel.
             </p>
             <p>
                 To have the perfect rating, players must have placed a diversity of buildings in the city so the basic needs of citizens could be met. If
-                players' ever feel confused about what is missing -- pay attention to the Mayor's reaction. They would give out opinions on how the city could
+                players' ever feel confused about what is missing -- pay attention to the Mayor's reaction (the little avatar you see at the top of this page, say hi!). They would give out opinions on how the city could
                 be improved.
             </p>
 
-            <br />
             <p>Have fun! The city is your oyster.</p>
+
+
+            <br>
+            <h4>Project by Jeff Ma & Caitlyn Cui, Interactive Computing Fall 2022</h4>
         </div>
 
         <script>
@@ -104,21 +107,22 @@
             console.log(b);
             console.log(g);
 
-            let rnd = Math.floor(Math.random() * 2);
-            if (rnd == 0) {
-                document.getElementById('boy').style.display = 'block';
-                document.getElementById('girl').style.display = 'none';
-            } else if (rnd == 1) {
-                document.getElementById('girl').style.display = 'block';
-                document.getElementById('boy').style.display = 'none';
-            }
-
-            // // setInterval(playVoice(rnd), 2000);
-            // //    // playVoice(rnd);
+            let boys = ['goodB','hotelB','parkB','roadB','stadiumB','welcomeB'];
+            let girls = ['apartmentG','goodG','officeG','parkG','schoolG','welcomeG'];
 
             if (window.parent.toPlay) {
                 document.querySelector(`#${window.parent.toPlay}`).play();
+
+                if(boys.includes(window.parent.toPlay)){
+                    document.getElementById('boy').style.display = 'block';
+                    document.getElementById('girl').style.display = 'none';
+                }
+                else{
+                    document.getElementById('girl').style.display = 'block';
+                    document.getElementById('boy').style.display = 'none';
+                }
             }
+
         </script>
     </body>
 </html>
