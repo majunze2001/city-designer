@@ -21,7 +21,7 @@ let walkers = [];
 
 //cells in the map to enable "snapping to the center"
 const CELLSIZE = 16;
-// const map =
+// we need more models!!!
 
 const metaData = {
     office: { width: 25.8855224609375, height: 10.034808593750002, depth: 13.216087890625001, scaleX: 0.004, scaleY: 0.004, scaleZ: 0.004, color: 'blue' },
@@ -490,7 +490,9 @@ function setup() {
     // world.camera.cameraEl.object3D.rotation.set(-Math.PI / 6, 0, 0);
     // world.camera.cameraEl.setAttribute('rotation', '0,3.14,0');
     // world.camera.cameraEl.components['look-controls'].yawObject.rotation.set(0, Math.PI / 2, 0);
-    const testRoads = [[72,8],[72,24],[72,40],[72,56],[72,72],[72,88],[72,120],[72,136],[72,152],[72,168],[72,184],[72,216],[72,232],[72,104],[72,200],[88,232],[104,232],[152,232],[168,232],[184,232],[200,232],[216,232],[232,232],[120,232],[136,232],[232,248],[232,264],[232,280],[232,296],[232,312],[232,328],[232,344],[232,360],[216,360],[200,360],[184,360],[152,360],[136,360],[120,360],[104,360],[88,360],[72,360],[168,360],[72,376],[72,392],[72,408],[72,424],[72,440],[72,456],[72,472],[72,488],[72,504]];
+
+    // prettier-ignore
+    const testRoads = [[72,8],[72,24],[72,40],[72,56],[72,72],[72,88],[72,120],[72,136],[72,152],[72,168],[72,184],[72,216],[72,232],[72,104],[72,200],[88,232],[104,232],[152,232],[168,232],[184,232],[200,232],[216,232],[232,232],[120,232],[136,232],[232,248],[232,264],[232,280],[232,296],[232,312],[232,328],[232,344],[232,360],[216,360],[200,360],[184,360],[152,360],[136,360],[120,360],[104,360],[88,360],[72,360],[168,360],[72,376],[72,392],[72,408],[72,424],[72,440],[72,456],[72,472],[72,488],[72,504],[88,8],[104,8],[136,8],[152,8],[120,8]];
     for (const [x, y] of testRoads) {
         roads.push(new Road(x, y));
     }
@@ -900,12 +902,19 @@ function getPaths() {
 }
 
 class Walker {
-    static maxSchool = 60;
-    static maxPark = 10;
+    static maxSatisfactory = {
+        office: 150,
+        apartment: 150,
+        hotel: 250,
+        school: 400,
+        park: 400,
+        stadium: 600,
+    };
+
     constructor(pathIndexes) {
         this.path = pathIndexes.map((i) => [(i % 32) - 0.5, Math.ceil(i / 32) - 0.5]);
 
-        this.path.unshift([this.path[0][0],-0.5]);
+        this.path.unshift([this.path[0][0], -0.5]);
 
         this.pos = 0;
         // x and y are in 2D map
@@ -920,8 +929,8 @@ class Walker {
         this.dx = 0; //[dx, dy]
         this.dy = 1;
 
-        this.satisfaction = 60;
-        this.sat = { school: 30, park: 60, apartment: 20, office: 15 };
+        // init val: half of max
+        this.satisfaction = Object.fromEntries(Object.entries(Walker.maxSatisfactory).map(([k, v]) => [k, v / 2]));
 
         this.body = new GLTF({ asset: 'car', x: map(this.x, 0, 32, -50, 50), y: 0.6, z: -50, scaleX: 0.005, scaleY: 0.005, scaleZ: 0.005, rotationY: -90 });
 
@@ -949,7 +958,8 @@ class Walker {
         // === does not work due to floating point not precise
         if (Math.abs(this.x - nextX) <= this.speed && Math.abs(this.y - nextY) <= this.speed) {
             this.pos++;
-            if(this.pos<this.path.length-1){
+            // turning logic
+            if (this.pos < this.path.length - 1) {
                 const nextDx = this.path[this.pos + 1][0] - this.path[this.pos][0];
                 const nextDy = this.path[this.pos + 1][1] - this.path[this.pos][1];
                 if (this.dx !== nextDx || this.dy !== nextDy) {
@@ -960,11 +970,9 @@ class Walker {
                         this.spinDeg = 90 * (nextDx || nextDy);
                     }
                     this.dx = nextDx;
-                    this.dy = nextDy
+                    this.dy = nextDy;
                 }
             }
-
-            
         } else if (Math.abs(this.x - nextX) <= this.speed) {
             this.y += this.y < nextY ? this.speed : -this.speed;
         } else if (Math.abs(this.y - nextY) <= this.speed) {
@@ -977,25 +985,32 @@ class Walker {
         const _3dz = map(this.y, 0, 32, -50, 50);
         this.body.setX(_3dx);
         this.body.setZ(_3dz);
-        this.body.setGreen(map(this.satisfaction, 0, 100, 0, 255));
 
         // satisfaction logic
-        let found = false;
+        const found = Object.fromEntries(Object.keys(Walker.maxSatisfactory).map((k) => [k, false]));
         buildings.forEach((b) => {
             const d = dist(b.x, b.z, _3dx, _3dz);
             if (d < 20) {
-                this.satisfaction = constrain(this.satisfaction + 1, 0, 100);
-                found = true || found;
+                // find
+                this.satisfaction[b.asset]++; //constrain later
+                found[b.asset] = true;
             }
         });
-        if (!found) {
-            this.satisfaction = constrain(this.satisfaction - 2, 0, 100);
-        }
+
+        Object.entries(found).forEach(([k, v]) => {
+            if (!v) {
+                this.satisfaction[k]--;
+            }
+            this.satisfaction[k] = constrain(this.satisfaction[k], -Walker.maxSatisfactory[k], Walker.maxSatisfactory[k]);
+        });
     }
 
     display() {
         buffer.rectMode(CENTER);
-        buffer.fill(255, map(this.satisfaction, 0, 100, 0, 255), 0);
+        const all = Object.entries(this.satisfaction);
+        // suppose all buildings have same weight
+        const positive = all.filter(([k, v]) => v >= 0);
+        buffer.fill(255, map(positive.length, 0, all.length, 0, 255), 0);
         // buffer.rect(map(this.x, 0, 32, 0, 512), this.y, 8, 8);
         buffer.rect(this.x * CELLSIZE, this.y * CELLSIZE, 8, 8);
     }
