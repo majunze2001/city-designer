@@ -49,6 +49,25 @@
             <source src="assets/sounds/boy_sounds/welcome.wav" type="audio/wav" />
         </audio>
 
+        <audio id="apartmentG">
+            <source src="assets/sounds/girl_sounds/apartment.wav" type="audio/wav" />
+        </audio>
+        <audio id="goodG">
+            <source src="assets/sounds/girl_sounds/beautiful.wav" type="audio/wav" />
+        </audio>
+        <audio id="officeG">
+            <source src="assets/sounds/girl_sounds/office.wav" type="audio/wav" />
+        </audio>
+        <audio id="parkG">
+            <source src="assets/sounds/girl_sounds/park.wav" type="audio/wav" />
+        </audio>
+        <audio id="schoolG">
+            <source src="assets/sounds/girl_sounds/school.wav" type="audio/wav" />
+        </audio>
+        <audio id="welcomeG">
+            <source src="assets/sounds/girl_sounds/welcome.wav" type="audio/wav" />
+        </audio>
+
         <div style="width: 60%; margin: auto; text-align: justify">
             <p>This is the city of your dream.</p>
             <br />
@@ -80,29 +99,6 @@
         </div>
 
         <script>
-            // let soundEffect; // global variable
-            // soundEffect = document.getElementById('soundeffect'); // in setup
-            // soundEffect.play(); // when you need to trigger the sound
-
-            let s1, s2, s3, s4, s5, s6;
-            s1 = document.getElementById('goodB');
-            s2 = document.getElementById('hotelB');
-            s3 = document.getElementById('parkB');
-            s4 = document.getElementById('roadB');
-            s5 = document.getElementById('stadiumB');
-            s6 = document.getElementById('welcomeB');
-
-            // console.log(window.toPlay);
-
-            let boy_sounds = [];
-            boy_sounds.push(s1);
-            boy_sounds.push(s2);
-            boy_sounds.push(s3);
-            boy_sounds.push(s4);
-            boy_sounds.push(s5);
-            boy_sounds.push(s6);
-            console.log(boy_sounds);
-
             let b = document.getElementById('boy');
             let g = document.getElementById('girl');
             console.log(b);
@@ -117,13 +113,12 @@
                 document.getElementById('boy').style.display = 'none';
             }
 
-            // setInterval(playVoice(rnd), 2000);
-            // playVoice(rnd);
+            // // setInterval(playVoice(rnd), 2000);
+            // //    // playVoice(rnd);
 
             if (window.parent.toPlay) {
                 document.querySelector(`#${window.parent.toPlay}`).play();
             }
-
         </script>
     </body>
 </html>
