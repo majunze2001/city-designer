@@ -42,6 +42,8 @@ let bgm,
     playBgm = 0;
 let choice = 'road';
 let addMode = 1;
+const userDefaultPosition = [0, 15, 55];
+let editMode = true;
 
 function preload() {
     music = loadSound('assets/sounds/bubble.mp3');
@@ -725,16 +727,20 @@ class Building {
 }
 
 function viewWorld() {
-    world.setUserPosition(0, 1, 40);
-    const { x, y, z } = world.getUserRotation();
+    world.setUserPosition(userDefaultPosition[0], userDefaultPosition[1] + 2, userDefaultPosition[2] + -2);
+    world.camera.cameraEl.components['look-controls'].pitchObject.rotation.set(0, 0, 0);
+    world.camera.cameraEl.components['look-controls'].yawObject.rotation.set(0, 0, 0);
+    editMode = false;
     // world.rotateCameraX((x * -180) / PI);
     // world.rotateCameraY((y * -180) / PI);
     // world.rotateCameraZ((z * -180) / PI);
 }
 
 function editWorld() {
-    world.setUserPosition(0, 25, 1);
-    const { x, y, z } = world.getUserRotation();
+    world.setUserPosition(userDefaultPosition[0], userDefaultPosition[1] + 2, userDefaultPosition[2] + 6);
+    world.camera.cameraEl.components['look-controls'].pitchObject.rotation.set(0, 0, 0);
+    world.camera.cameraEl.components['look-controls'].yawObject.rotation.set(0, 0, 0);
+    editMode = true;
     // world.rotateCameraX((x * -180) / PI);
     // world.rotateCameraY((y * -180) / PI);
     // world.rotateCameraZ((z * -180) / PI);
