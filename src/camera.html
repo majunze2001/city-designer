@@ -12,14 +12,14 @@
         <script src="https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/addons/p5.sound.min.js"></script>
         <!-- A-Frame core library -->
-        <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+        <!-- <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script> -->
 
         <!-- AR.js Library  documentation:  https://ar-js-org.github.io/AR.js-Docs/
         <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script> -->
 
         <!-- AFrameP5 AR library -->
         <!-- documentation:  https://cs.nyu.edu/~kapp/aframep5-ar -->
-        <script src="https://craignyu.github.io/aframep5-ar/libraries/aframep5_ar-v0.4.js"></script>
+        <!-- <script src="https://craignyu.github.io/aframep5-ar/libraries/aframep5_ar-v0.4.js"></script> -->
 
     
     </head>
@@ -31,22 +31,22 @@
             <img id="girl" style="display:none" src="assets/images/g.gif">
         </div>
 
-        <audio id="goodB" muted="true">
+        <audio id="goodB">
             <source src="assets/sounds/boy_sounds/good.wav" type="audio/wav">
         </audio>
-        <audio id="hotelB" muted="true">
+        <audio id="hotelB" >
             <source src="assets/sounds/boy_sounds/hotel.wav" type="audio/wav">
         </audio>
-        <audio id="parkB" muted="true">
+        <audio id="parkB">
             <source src="assets/sounds/boy_sounds/park.wav" type="audio/wav">
         </audio>
-        <audio id="roadB" muted="true">
+        <audio id="roadB" >
             <source src="assets/sounds/boy_sounds/road.wav" type="audio/wav">
         </audio>
-        <audio id="stadiumB" muted="true">
+        <audio id="stadiumB" >
             <source src="assets/sounds/boy_sounds/stadium.wav" type="audio/wav">
         </audio>
-        <audio id="welcomeB" muted="true">
+        <audio id="welcomeB">
             <source src="assets/sounds/boy_sounds/welcome.wav" type="audio/wav">
         </audio>
 
@@ -97,6 +97,7 @@
         boy_sounds.push(s4);
         boy_sounds.push(s5);
         boy_sounds.push(s6);
+        console.log(boy_sounds);
 
         let b = document.getElementById('boy');
         let g = document.getElementById('girl');
@@ -118,7 +119,8 @@
         function playVoice(rnd){
             let temp = Math.floor(Math.random()*6);
             boy_sounds[temp].muted = true;
-            boy_sounds[temp].play();            
+            boy_sounds[temp].play();      
+            console.log(boy_sounds[temp]);      
         }
 
     </script>
