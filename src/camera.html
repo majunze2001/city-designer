@@ -50,6 +50,25 @@
             <source src="assets/sounds/boy_sounds/welcome.wav" type="audio/wav">
         </audio>
 
+        <audio id="apartmentG">
+            <source src="assets/sounds/girl_sounds/apartment.wav" type="audio/wav">
+        </audio>
+        <audio id="goodG" >
+            <source src="assets/sounds/girl_sounds/beautiful.wav" type="audio/wav">
+        </audio>
+        <audio id="officeG">
+            <source src="assets/sounds/girl_sounds/office.wav" type="audio/wav">
+        </audio>
+        <audio id="parkG" >
+            <source src="assets/sounds/girl_sounds/park.wav" type="audio/wav">
+        </audio>
+        <audio id="schoolG" >
+            <source src="assets/sounds/girl_sounds/school.wav" type="audio/wav">
+        </audio>
+        <audio id="welcomeG">
+            <source src="assets/sounds/girl_sounds/welcome.wav" type="audio/wav">
+        </audio>
+
     <div style="width:60%;margin:auto;text-align:justify">
         <p>This is the city of your dream.</p>
         <br>
@@ -99,6 +118,23 @@
         boy_sounds.push(s6);
         console.log(boy_sounds);
 
+
+        let d1,d2,d3,d4,d5,d6;
+        d1 = document.getElementById('apartmentG');
+        d2 = document.getElementById('goodG');
+        d3 = document.getElementById('officeG');
+        d4 = document.getElementById('parkG');
+        d5 = document.getElementById('schoolG');
+        d6 = document.getElementById('welcomeG');
+
+        let girl_sounds = [];
+        girl_sounds.push(d1);
+        girl_sounds.push(d2);
+        girl_sounds.push(d3);
+        girl_sounds.push(d4);
+        girl_sounds.push(d5);
+        girl_sounds.push(d6);
+        
         let b = document.getElementById('boy');
         let g = document.getElementById('girl');
         console.log(b);
@@ -113,15 +149,14 @@
             document.getElementById("boy").style.display = "none";
         }
 
-        setInterval(playVoice(rnd), 2000);
-        playVoice(rnd);
+        // setInterval(playVoice(rnd), 2000);
+        // //playVoice(rnd);
 
-        function playVoice(rnd){
-            let temp = Math.floor(Math.random()*6);
-            boy_sounds[temp].muted = true;
-            boy_sounds[temp].play();      
-            console.log(boy_sounds[temp]);      
-        }
+        // function playVoice(rnd){
+        //     let temp = Math.floor(Math.random()*6);
+        //     boy_sounds[temp].play();      
+        //     console.log(boy_sounds[temp]);      
+        // }
 
     </script>
         
