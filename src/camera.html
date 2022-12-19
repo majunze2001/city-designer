@@ -21,85 +21,34 @@
         <!-- documentation:  https://cs.nyu.edu/~kapp/aframep5-ar -->
         <script src="https://craignyu.github.io/aframep5-ar/libraries/aframep5_ar-v0.4.js"></script>
 
-        <script>
-            //window.hiroVisCount = 0;
-
-            // create a variable to hold our world object
-            //let world;
-
-            // create a variable to hold our marker
-            //let hiroMarker;
-            let rnd = parseInt(Math.random(0,2));
-            let avatar1, avatar2;
-            let a1, a2;
-            let attached,at;
-
-            function preload(){
-                //avatar1 = loadImage('assets/images/b.gif');
-                let a1 = createImg('assets/images/b.gif').id();
-                // avatar2 = loadImage('assets/images/g.gif');
-                //a2 = createImg('assets/images/a.gif');
-                bg = loadSound('assets/sounds/boy_sounds/welcome.wav');
-            }
-            function setup() {
-                a1.style.margin = "auto";
-                //let cnv = createCanvas(800,600);
-                //background(0);
-                // if (rnd == 1){
-                //     // attached = avatar1;
-                //     at = a1;
-                // }else{
-                //     // attached = avatar2;
-                //     at = a2;
-                // }
-                // create our world (this also creates a p5 canvas for us)
-                //world = new World('ARScene');
-
-                // grab a reference to the marker that we set up on the HTML side (connect to it using its 'id')
-                //hiroMarker = world.getMarker('hiro');
-
-                // // create some geometry to add to our marker
-                // let cube = new Box({
-                //     x: 0,
-                //     y: 0.5,
-                //     z: 0,
-                //     red: 0,
-                //     green: 255,
-                //     blue: 0,
-                //     width: 1,
-                //     height: 1,
-                //     depth: 1,
-                //     opacity: 0.5,
-                // });
-
-                // // add the cube to our marker
-                // marker.add(cube);
-                
-            }
-
-            function draw() {
-                //imageMode(CENTER);
-                //image(avatar1, 400,300);
-                a1.position(width/2,0);
-                //bg.play();
-                // if (hiroMarker.isVisible()) {
-                //     window.hiroVisCount++;
-                // }
-                // if (window.hiroVisCount >= 120) {
-                //     window.addHiro = true;
-                //     window.hiroVisCount = 0;
-                // }
-            }
-        </script>
-
+    
     </head>
     <body>
-        <!-- A-Frame Scene -->
-        <!-- <a-scene id="ARScene" embedded arjs>
-               <a-marker id="hiro" type="pattern" url="markers/patt.hiro"></a-marker>
-            <a-entity camera></a-entity>
-        </a-scene> -->
+
         <h1 style="margin-left:25%">Welcome to City Designer</h1>
+        <div style = "margin-left:25%">
+            <img id="boy" style="display:none" src="assets/images/b.gif">
+            <img id="girl" style="display:none" src="assets/images/g.gif">
+        </div>
+
+        <audio id="goodB" muted="true">
+            <source src="assets/sounds/boy_sounds/good.wav" type="audio/wav">
+        </audio>
+        <audio id="hotelB" muted="true">
+            <source src="assets/sounds/boy_sounds/hotel.wav" type="audio/wav">
+        </audio>
+        <audio id="parkB" muted="true">
+            <source src="assets/sounds/boy_sounds/park.wav" type="audio/wav">
+        </audio>
+        <audio id="roadB" muted="true">
+            <source src="assets/sounds/boy_sounds/road.wav" type="audio/wav">
+        </audio>
+        <audio id="stadiumB" muted="true">
+            <source src="assets/sounds/boy_sounds/stadium.wav" type="audio/wav">
+        </audio>
+        <audio id="welcomeB" muted="true">
+            <source src="assets/sounds/boy_sounds/welcome.wav" type="audio/wav">
+        </audio>
 
     <div style="width:60%;margin:auto;text-align:justify">
         <p>This is the city of your dream.</p>
@@ -127,6 +76,52 @@
             Have fun! The city is your oyster.
         </p>
      </div>
+
+     <script>   
+        // let soundEffect; // global variable
+        // soundEffect = document.getElementById('soundeffect'); // in setup
+        // soundEffect.play(); // when you need to trigger the sound
+
+        let s1,s2,s3,s4,s5,s6;
+        s1 = document.getElementById('goodB');
+        s2 = document.getElementById('hotelB');
+        s3 = document.getElementById('parkB');
+        s4 = document.getElementById('roadB');
+        s5 = document.getElementById('stadiumB');
+        s6 = document.getElementById('welcomeB');
+
+        let boy_sounds = [];
+        boy_sounds.push(s1);
+        boy_sounds.push(s2);
+        boy_sounds.push(s3);
+        boy_sounds.push(s4);
+        boy_sounds.push(s5);
+        boy_sounds.push(s6);
+
+        let b = document.getElementById('boy');
+        let g = document.getElementById('girl');
+        console.log(b);
+        console.log(g);
+
+        let rnd = Math.floor(Math.random()*2);
+        if (rnd == 0){
+            document.getElementById("boy").style.display = "block";
+            document.getElementById("girl").style.display = "none";
+        }else if(rnd == 1){
+            document.getElementById("girl").style.display = "block";
+            document.getElementById("boy").style.display = "none";
+        }
+
+        // setInterval(playVoice(rnd), 2000);
+        playVoice(rnd);
+
+        function playVoice(rnd){
+            let temp = Math.floor(Math.random()*6);
+            boy_sounds[temp].muted = true;
+            boy_sounds[temp].play();            
+        }
+
+    </script>
         
     </body>
 </html>
