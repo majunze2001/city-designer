@@ -755,6 +755,8 @@ function switchCamera() {
     } else {
         const camera = document.body.appendChild(document.createElement('iframe'));
         camera.src = 'camera.html';
+        // document.querySelector('iframe').contentWindow.toPlay = 'hotelB';
+        this.toPlay = 'hotelB';
     }
 }
 

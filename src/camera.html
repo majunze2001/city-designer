@@ -6,7 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Help</title>
 
-        <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="cam.css" />
 
         <script src="https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.js"></script>
@@ -20,110 +22,108 @@
         <!-- AFrameP5 AR library -->
         <!-- documentation:  https://cs.nyu.edu/~kapp/aframep5-ar -->
         <!-- <script src="https://craignyu.github.io/aframep5-ar/libraries/aframep5_ar-v0.4.js"></script> -->
-
-    
     </head>
     <body>
-
-        <h1 style="margin-left:25%">Welcome to City Designer</h1>
-        <div style = "margin-left:25%">
-            <img id="boy" style="display:none" src="assets/images/b.gif">
-            <img id="girl" style="display:none" src="assets/images/g.gif">
+        <h1 style="margin-left: 25%">Welcome to City Designer</h1>
+        <div style="margin-left: 25%">
+            <img id="boy" style="display: none" src="assets/images/b.gif" />
+            <img id="girl" style="display: none" src="assets/images/g.gif" />
         </div>
 
         <audio id="goodB">
-            <source src="assets/sounds/boy_sounds/good.wav" type="audio/wav">
+            <source src="assets/sounds/boy_sounds/good.wav" type="audio/wav" />
         </audio>
-        <audio id="hotelB" >
-            <source src="assets/sounds/boy_sounds/hotel.wav" type="audio/wav">
+        <audio id="hotelB">
+            <source src="assets/sounds/boy_sounds/hotel.wav" type="audio/wav" />
         </audio>
         <audio id="parkB">
-            <source src="assets/sounds/boy_sounds/park.wav" type="audio/wav">
+            <source src="assets/sounds/boy_sounds/park.wav" type="audio/wav" />
         </audio>
-        <audio id="roadB" >
-            <source src="assets/sounds/boy_sounds/road.wav" type="audio/wav">
+        <audio id="roadB">
+            <source src="assets/sounds/boy_sounds/road.wav" type="audio/wav" />
         </audio>
-        <audio id="stadiumB" >
-            <source src="assets/sounds/boy_sounds/stadium.wav" type="audio/wav">
+        <audio id="stadiumB">
+            <source src="assets/sounds/boy_sounds/stadium.wav" type="audio/wav" />
         </audio>
         <audio id="welcomeB">
-            <source src="assets/sounds/boy_sounds/welcome.wav" type="audio/wav">
+            <source src="assets/sounds/boy_sounds/welcome.wav" type="audio/wav" />
         </audio>
 
-    <div style="width:60%;margin:auto;text-align:justify">
-        <p>This is the city of your dream.</p>
-        <br>
-        <p>Inspired by the video game SimCity, this project allows players to design the city they have been dreaming about in VR. 
-            Players are encouraged to manipualte the 2D panel and set up different types of buildings in the city, including office, 
-            apartment, park, school, stadium etc. They can also pave roads that run across the city, which allow cars to go through and
-            drive around the town, rating how satisfied they are with this city players have constructed.
-        </p>
-        <p>With the left and right arrow keys besides the panel, players can rotate to see how they would like the place the buildings or
-            pave the road. Buildings may not intersect with each other nor should they be overlapped over the roads. When paving the roads, 
-            remember that only roads that perfectly go down from top to bottom would have cars go across. 
-        </p>
-        <p>Once players are happy with what they have, clicking "View" button allows they to see the city in VR/ 3D mode while clicking "edit" button would bring them back.
-            Background music is subject to be played or turned down if toggled it on and off. If players want to modify the current designs, clicking the green box helps them
-            to make partial changes on the buildings/roads they have previously built; if players want a complete start over, clicking the red circle button would erase everything on the panel.
-        </p>
-        <p>
-            To have the perfect rating, players must have placed a diversity of buildings in the city so the basic needs of citizens could be met.
-            If players' ever feel confused about what is missing -- pay attention to the Mayor's reaction. They would give out opinions on how the city could be improved. 
-        </p>
+        <div style="width: 60%; margin: auto; text-align: justify">
+            <p>This is the city of your dream.</p>
+            <br />
+            <p>
+                Inspired by the video game SimCity, this project allows players to design the city they have been dreaming about in VR. Players are encouraged
+                to manipualte the 2D panel and set up different types of buildings in the city, including office, apartment, park, school, stadium etc. They can
+                also pave roads that run across the city, which allow cars to go through and drive around the town, rating how satisfied they are with this city
+                players have constructed.
+            </p>
+            <p>
+                With the left and right arrow keys besides the panel, players can rotate to see how they would like the place the buildings or pave the road.
+                Buildings may not intersect with each other nor should they be overlapped over the roads. When paving the roads, remember that only roads that
+                perfectly go down from top to bottom would have cars go across.
+            </p>
+            <p>
+                Once players are happy with what they have, clicking "View" button allows they to see the city in VR/ 3D mode while clicking "edit" button would
+                bring them back. Background music is subject to be played or turned down if toggled it on and off. If players want to modify the current
+                designs, clicking the green box helps them to make partial changes on the buildings/roads they have previously built; if players want a complete
+                start over, clicking the red circle button would erase everything on the panel.
+            </p>
+            <p>
+                To have the perfect rating, players must have placed a diversity of buildings in the city so the basic needs of citizens could be met. If
+                players' ever feel confused about what is missing -- pay attention to the Mayor's reaction. They would give out opinions on how the city could
+                be improved.
+            </p>
 
-        <br>
-        <p>
-            Have fun! The city is your oyster.
-        </p>
-     </div>
+            <br />
+            <p>Have fun! The city is your oyster.</p>
+        </div>
 
-     <script>   
-        // let soundEffect; // global variable
-        // soundEffect = document.getElementById('soundeffect'); // in setup
-        // soundEffect.play(); // when you need to trigger the sound
+        <script>
+            // let soundEffect; // global variable
+            // soundEffect = document.getElementById('soundeffect'); // in setup
+            // soundEffect.play(); // when you need to trigger the sound
 
-        let s1,s2,s3,s4,s5,s6;
-        s1 = document.getElementById('goodB');
-        s2 = document.getElementById('hotelB');
-        s3 = document.getElementById('parkB');
-        s4 = document.getElementById('roadB');
-        s5 = document.getElementById('stadiumB');
-        s6 = document.getElementById('welcomeB');
+            let s1, s2, s3, s4, s5, s6;
+            s1 = document.getElementById('goodB');
+            s2 = document.getElementById('hotelB');
+            s3 = document.getElementById('parkB');
+            s4 = document.getElementById('roadB');
+            s5 = document.getElementById('stadiumB');
+            s6 = document.getElementById('welcomeB');
 
-        let boy_sounds = [];
-        boy_sounds.push(s1);
-        boy_sounds.push(s2);
-        boy_sounds.push(s3);
-        boy_sounds.push(s4);
-        boy_sounds.push(s5);
-        boy_sounds.push(s6);
-        console.log(boy_sounds);
+            // console.log(window.toPlay);
 
-        let b = document.getElementById('boy');
-        let g = document.getElementById('girl');
-        console.log(b);
-        console.log(g);
+            let boy_sounds = [];
+            boy_sounds.push(s1);
+            boy_sounds.push(s2);
+            boy_sounds.push(s3);
+            boy_sounds.push(s4);
+            boy_sounds.push(s5);
+            boy_sounds.push(s6);
+            console.log(boy_sounds);
 
-        let rnd = Math.floor(Math.random()*2);
-        if (rnd == 0){
-            document.getElementById("boy").style.display = "block";
-            document.getElementById("girl").style.display = "none";
-        }else if(rnd == 1){
-            document.getElementById("girl").style.display = "block";
-            document.getElementById("boy").style.display = "none";
-        }
+            let b = document.getElementById('boy');
+            let g = document.getElementById('girl');
+            console.log(b);
+            console.log(g);
 
-        setInterval(playVoice(rnd), 2000);
-        playVoice(rnd);
+            let rnd = Math.floor(Math.random() * 2);
+            if (rnd == 0) {
+                document.getElementById('boy').style.display = 'block';
+                document.getElementById('girl').style.display = 'none';
+            } else if (rnd == 1) {
+                document.getElementById('girl').style.display = 'block';
+                document.getElementById('boy').style.display = 'none';
+            }
 
-        function playVoice(rnd){
-            let temp = Math.floor(Math.random()*6);
-            boy_sounds[temp].muted = true;
-            boy_sounds[temp].play();      
-            console.log(boy_sounds[temp]);      
-        }
+            // setInterval(playVoice(rnd), 2000);
+            // playVoice(rnd);
 
-    </script>
-        
+            if (window.parent.toPlay) {
+                document.querySelector(`#${window.parent.toPlay}`).play();
+            }
+
+        </script>
     </body>
 </html>
