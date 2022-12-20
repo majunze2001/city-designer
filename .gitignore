@@ -9,4 +9,6 @@ input.css
 
 tailwind.config.js
 
-src/test/
+test/
+
+*.zip
