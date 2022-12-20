@@ -12,7 +12,7 @@
         <h1 class="py-4 text-center font-serif text-lg text-blue-700 underline">
             <a href="https://docs.google.com/document/d/117nbJ_7v_t8p-onToIpkS0nbb8pjiOs0HHoinResQs8" class="hover:font-bold" target="_blank">Google Doc</a>
             <span class="mx-8 inline-block">&nbsp;</span>
-            <a href="src" class="hover:font-bold" target="_blank">Live DEMO(WIP)</a>
+            <a href="src" class="hover:font-bold" target="_blank">Game</a>
         </h1>
         <hr class="sep-line" />
         <div class="mx-auto w-4/5 text-right text-lg md:w-3/5">
@@ -103,23 +103,153 @@
             be triggered if they are near certain types of building models etc. We are considering changing the pedestrians into cars (to make it easier by
             getting rid of animations), which would have less flexibility yet easier to implement and seem more neatly in the map.
         </div>
-        <!-- <h2 class="text-center font-serif text-2xl text-blue-500">acknowledgement</h2> -->
 
         <hr class="sep-line" />
-         <h2 class="my-4 text-center font-serif text-3xl text-blue-600">Update #2</h2>
+        <h2 class="my-4 text-center font-serif text-3xl text-blue-600">Update #2</h2>
         <div class="text-div">
-            We have implemented the new version of background music for the game (inspired by the original soundtrack of SimCity 2000) to give the game a metropolitan vibe. Road elements are now available to be added as roads on the panel in editing mode, which would automatically be reflected as “bricks” on plane in the 3D mode. Ideally with further development, pedestrians are able to wander around the streets and are only allowed to walk on such restricted regions only.
+            We have implemented the new version of background music for the game (inspired by the original soundtrack of SimCity 2000) to give the game a
+            metropolitan vibe. Road elements are now available to be added as roads on the panel in editing mode, which would automatically be reflected as
+            “bricks” on plane in the 3D mode. Ideally with further development, pedestrians are able to wander around the streets and are only allowed to walk
+            on such restricted regions only.
         </div>
 
         <div class="text-div">
-            The process of adding road bricks is similar to choosing building models on the edit panels. Roads objects are interpreted by the program as smaller planes on top of the massive grass playground we have for designers. 
+            The process of adding road bricks is similar to choosing building models on the edit panels. Roads objects are interpreted by the program as smaller
+            planes on top of the massive grass playground we have for designers.
         </div>
 
         <h2 class="text-center font-serif text-2xl text-blue-500">Small Problems</h2>
 
         <div class="text-div">
-            It would be more convenient for designers if they could toggle around a specific region and pave the roads automatically over that selected area. Should I advance in this by increasing the width & height property for the road metadata so that every click reaches a wider scope, or should I try to change the default “paving-editing” process by changing the state of mouse cool down, so that the bricks would be paved when the designer is hovering over the map?
+            It would be more convenient for designers if they could toggle around a specific region and pave the roads automatically over that selected area.
+            Should I advance in this by increasing the width & height property for the road metadata so that every click reaches a wider scope, or should I try
+            to change the default “paving-editing” process by changing the state of mouse cool down, so that the bricks would be paved when the designer is
+            hovering over the map?
         </div>
 
+        <hr class="sep-line" />
+
+        <h2 class="my-4 text-center font-serif text-3xl text-blue-600">Final Documentation</h2>
+
+        <iframe class="m-auto my-6 block" type="text/html" width="480" height="360" src="https://www.youtube.com/embed/5U-wnN_ghZI" frameborder="0"></iframe>
+
+        <div class="text-div">
+            When first entered the game, players could see a blank 2D control panel, which serves as the canvas for them to place models. The colored squares on
+            the side have captions indicating the type of building models they each support, as well as different graphics of the roads that players could
+            select from. Once a building has been selected, a 3D preview of it is displayed to the left of the panel, with left and right arrows allowing
+            players to rotate the model to their desire; then by clicking on the canvas, a colored square representing the building would be placed on the 2D
+            panel, and an actual 3D model of the building would appear correspondingly on the 3D map down below. Types of buildings include offices, apartments,
+            hotels, schools, parks, stadiums, and straight and turning road graphics. Buildings are not allowed to intersect with each other, and they may not
+            be placed on top of the roads.
+        </div>
+
+        <div class="text-div">
+            When players want to make changes to what they have already built, the green box works as an eraser to commit partial changes if they click it first
+            and click the parts they want to get rid of on the 2D panel; if they are looking for a complete start over, the red sphere would clear up the panel
+            and gives them a fresh start. On the top right corner, the BGM button allows the player to turn on or off the background music for the game. After
+            they finish editing the city, clicking the “view” button on the left-right corner helps them to enter the VR world and see for themselves what the
+            city looks like in 3D; they could navigate the city around using W-A-S-D. They could always make more changes by clicking “edit.”
+        </div>
+
+        <div class="text-div">
+            Roads must be paved so that it goes across from top to down so that there could be traffic in the city. Detecting whether there is a way from the
+            top to the bottom uses a Union-Find data structure, whereas finding all possible paths uses a Depth-First-Search algorithm. If the road is paved
+            correctly, clicking the “test” button would generate cars rushing across the city, entering from the top and exiting at the bottom. Although
+            animation is not implemented in the aframep5 library, the turning of a car is achieved by ‘spinY.’ The passengers in the car would rate the city
+            according to the buildings they see on the road; to meet all essential needs of the citizens, the designer should place all types of buildings
+            within a reasonable distance. On the control panel, the player can see how satisfied each passenger is with the city. The more satisfied a passenger
+            is, the more yellow it appears on the control panel.
+        </div>
+
+        <div class="text-div">
+            If the player ever feels confused about what is missing or how they could improve, by clicking “need help?” we would provide you with ideas on how
+            to increase the overall satisfaction level of the city — be careful of the hidden meanings between that advice, they will guide you to the correct
+            direction if you interpret it correctly. The type of voice message generated is communicated through the toPlay variable in the main javascript file
+            to the help page using iframe. The variable indicates the type of missing building, and the corresponding voice message hints would therefore be
+            delivered to the player.
+        </div>
+
+        <div class="text-div">
+            For future development, more models of buildings could be incorporated, and the types of roads could also be added for design purposes. Ideally, we
+            would love to introduce animation to the city, like walking pedestrians and running water. Right now, the roads only have cars racing through, and
+            it would be interesting to have pedestrians walking around the streets to see the city for themselves while giving out their ratings. The original
+            SimCity also has a variety of infrastructure that asks the player to design, such as setting up garbage recycling stations and electricity; those
+            are also excellent additions to the current project. Also, the current conversation page could be more elaborated with some AI chat models like
+            chatGPT. However, we need to wait for their API.
+        </div>
+
+        <hr class="sep-line" />
+
+        <h2 class="text-center font-serif text-2xl text-blue-500">Acknowledgement</h2>
+
+        <div class="text-div mb-16" id="acknowledgement">
+            <ul class="list-disc">
+                <li>
+                    Models
+                    <ul class="ml-8 list-disc">
+                        <li>
+                            This work is based on
+                            <a href="https://sketchfab.com/3d-models/hi-rise-apartment-building-f8c0a550cd1e441f85b46caeba6632f3">Hi rise apartment building</a>
+                            by <a href="https://sketchfab.com/aitortilla01"> aitortilla01</a> licensed under
+                            <a href="http://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>
+                        </li>
+                        <li>
+                            This work is based on
+                            <a href="https://sketchfab.com/3d-models/low-poly-truck-car-drifter-f3750246b6564607afbefc61cb1683b1"
+                                >Low-poly truck (car "Drifter")</a
+                            >
+                            by <a href="https://sketchfab.com/vanidza"> Ivan Norman</a> licensed under
+                            <a href="http://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>
+                        </li>
+                        <li>
+                            This work is based on
+                            <a href="https://sketchfab.com/3d-models/miami-style-condominium-b3e16399830045a7b67ec8e02447fd27">Miami style condominium</a>
+                            by <a href="https://sketchfab.com/aitortilla01"> aitortilla01</a> licensed under
+                            <a href="http://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>
+                        </li>
+                        <li>
+                            This work is based on
+                            <a href="https://sketchfab.com/3d-models/low-rise-wall-to-wall-office-building-dcf171dca9174000a0fa8d44660253d0"
+                                >Low rise wall to wall office building</a
+                            >
+                            by <a href="https://sketchfab.com/aitortilla01"> aitortilla01</a> licensed under
+                            <a href="http://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>
+                        </li>
+                        <li>
+                            This work is based on
+                            <a href="https://sketchfab.com/3d-models/city-park-at-sunset-ec70492df60b4d42b37b7219b7b2149e">City park at sunset</a>
+                            by <a href="https://sketchfab.com/virginiavidonis"> Virginia Vidonis</a> licensed under
+                            <a href="http://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>
+                        </li>
+                        <li>
+                            This work is based on
+                            <a href="https://sketchfab.com/3d-models/school-building-d34ac09a3ca544df999485c4b311abcc">school building</a>
+                            by <a href="https://sketchfab.com/swjeta"> swjeta</a> licensed under
+                            <a href="http://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>
+                        </li>
+                        <li>
+                            This work is based on
+                            <a href="https://sketchfab.com/3d-models/episode-61-stadium-bf5b622349f342508d138d483fe89a4a">Episode 61 - Stadium</a>
+                            by <a href="https://sketchfab.com/dartuchiwa"> swjeta</a> licensed under
+                            <a href="http://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Images
+                    <ul class="ml-8 list-disc">
+                        <li><a href="https://opengameart.org/content/hand-painted-grass-texture">Sky</a></li>
+                        <li><a href="https://blog.csdn.net/qq_37588752/article/details/105949791">Grass</a></li>
+                        <li><a href="https://www.outworldz.com/SeamlessTextures/master/Road/">Road</a></li>
+                    </ul>
+                </li>
+                <li>
+                    Music and sounds
+                    <ul class="ml-8 list-disc">
+                        <li>Voices synthesized from <a href="https://uberduck.ai/">Uberduck</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </body>
 </html>

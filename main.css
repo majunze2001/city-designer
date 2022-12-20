@@ -513,6 +513,10 @@ video {
   --tw-backdrop-sepia:  ;
 }
 
+.m-auto {
+  margin: auto;
+}
+
 .mx-8 {
   margin-left: 2rem;
   margin-right: 2rem;
@@ -533,6 +537,11 @@ video {
   margin-bottom: 1rem;
 }
 
+.my-6 {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
 .mr-8 {
   margin-right: 2rem;
 }
@@ -541,8 +550,24 @@ video {
   margin-left: 1rem;
 }
 
+.mb-16 {
+  margin-bottom: 4rem;
+}
+
+.ml-8 {
+  margin-left: 2rem;
+}
+
+.block {
+  display: block;
+}
+
 .inline-block {
   display: inline-block;
+}
+
+.hidden {
+  display: none;
 }
 
 .w-4\/5 {
@@ -665,6 +690,10 @@ video {
   .sep-line {
     width: 60%;
   }
+}
+
+#acknowledgement a {
+  text-decoration-line: underline;
 }
 
 .hover\:font-bold:hover {
